@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "achievements")
+@Table(name = "Achievement")
 public class AchievementEntity {
 
     @Id
@@ -21,7 +21,12 @@ public class AchievementEntity {
     @Column(name = "name", unique = true, nullable = false)
     private String name;
 
+    @Lob
     @Column(name = "icon")
     private String icon;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY) //cascade = CascadeType.ALL
+    @JoinColumn(name = "achievementCategoryName", nullable = false)
+    private AchievementCategoryEntity achievementCategoryEntity;
 
 }
