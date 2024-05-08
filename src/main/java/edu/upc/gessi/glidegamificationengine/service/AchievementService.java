@@ -1,5 +1,6 @@
 package edu.upc.gessi.glidegamificationengine.service;
 
+import edu.upc.gessi.glidegamificationengine.dto.AchievementCategoryDto;
 import edu.upc.gessi.glidegamificationengine.dto.AchievementDto;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -8,11 +9,15 @@ import java.util.List;
 
 public interface AchievementService {
 
-    AchievementDto createAchievement(String achievementName, MultipartFile achievementIcon, String achievementCategoryName) throws IOException;
+    AchievementDto createAchievement(String achievementName, MultipartFile achievementIcon, String achievementCategory) throws IOException;
 
-    List<AchievementDto> getAllAchievements();
+    List<AchievementDto> getAchievements();
 
-    AchievementDto getAchievementById(Long achievementId);
+    AchievementDto getAchievement(Long achievementId);
+
+    List<AchievementCategoryDto> getAchievementCategories();
+
+    AchievementCategoryDto getAchievementCategory(String achievementCategoryName);
 
     /*
     AchievementDto createAchievement(AchievementDto achievementDto);

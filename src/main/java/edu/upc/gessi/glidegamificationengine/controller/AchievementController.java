@@ -1,5 +1,6 @@
 package edu.upc.gessi.glidegamificationengine.controller;
 
+import edu.upc.gessi.glidegamificationengine.dto.AchievementCategoryDto;
 import edu.upc.gessi.glidegamificationengine.dto.AchievementDto;
 import edu.upc.gessi.glidegamificationengine.service.AchievementService;
 import org.apache.tika.Tika;
@@ -23,30 +24,42 @@ public class AchievementController {
     @PostMapping
     public ResponseEntity<AchievementDto> createAchievement(@RequestParam("name") String achievementName,
                                                             @RequestParam("icon") MultipartFile achievementIcon,
-                                                            @RequestParam("achievementCategoryName") String achievementCategoryName) throws IOException {
-        AchievementDto savedAchievementDto = achievementService.createAchievement(achievementName, achievementIcon, achievementCategoryName);
+                                                            @RequestParam("category") String achievementCategory) throws IOException {
+        AchievementDto savedAchievementDto = achievementService.createAchievement(achievementName, achievementIcon, achievementCategory);
         return new ResponseEntity<>(savedAchievementDto, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<AchievementDto>> getAllAchievements(){
-        List<AchievementDto> achievementDtos = achievementService.getAllAchievements();
+    public ResponseEntity<List<AchievementDto>> getAchievements(){
+        List<AchievementDto> achievementDtos = achievementService.getAchievements();
         return ResponseEntity.ok(achievementDtos);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<AchievementDto> getAchievementById(@PathVariable("id") Long achievementId) {
-        AchievementDto achievementDto = achievementService.getAchievementById(achievementId);
+    public ResponseEntity<AchievementDto> getAchievement(@PathVariable("id") Long achievementId) {
+        AchievementDto achievementDto = achievementService.getAchievement(achievementId);
         return ResponseEntity.ok(achievementDto);
     }
 
     @GetMapping("/{id}/icon")
-    public ResponseEntity<?> getAchievementIconById(@PathVariable("id") Long achievementId) {
-        AchievementDto achievementDto = achievementService.getAchievementById(achievementId);
+    public ResponseEntity<?> getAchievementIcon(@PathVariable("id") Long achievementId) {
+        AchievementDto achievementDto = achievementService.getAchievement(achievementId);
         byte[] iconBytes = java.util.Base64.getDecoder().decode(achievementDto.getIcon());
         Tika tika = new Tika();
         String iconMimeType = tika.detect(iconBytes);
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf(iconMimeType)).body(iconBytes);
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<List<AchievementCategoryDto>> getAchievementCategories(){
+        List<AchievementCategoryDto> achievementCategoryDtos = achievementService.getAchievementCategories();
+        return ResponseEntity.ok(achievementCategoryDtos);
+    }
+
+    @GetMapping("/categories/{name}")
+    public ResponseEntity<AchievementCategoryDto> getAchievementCategory(@PathVariable("name") String achievementCategoryName){
+        AchievementCategoryDto achievementCategoryDto = achievementService.getAchievementCategory(achievementCategoryName);
+        return ResponseEntity.ok(achievementCategoryDto);
     }
 
     /*

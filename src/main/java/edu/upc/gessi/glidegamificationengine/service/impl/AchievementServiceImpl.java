@@ -1,5 +1,6 @@
 package edu.upc.gessi.glidegamificationengine.service.impl;
 
+import edu.upc.gessi.glidegamificationengine.dto.AchievementCategoryDto;
 import edu.upc.gessi.glidegamificationengine.dto.AchievementDto;
 import edu.upc.gessi.glidegamificationengine.entity.AchievementEntity;
 import edu.upc.gessi.glidegamificationengine.exception.ConstraintViolationException;
@@ -7,11 +8,13 @@ import edu.upc.gessi.glidegamificationengine.exception.ResourceNotFoundException
 import edu.upc.gessi.glidegamificationengine.mapper.AchievementMapper;
 import edu.upc.gessi.glidegamificationengine.repository.AchievementRepository;
 import edu.upc.gessi.glidegamificationengine.service.AchievementService;
+import edu.upc.gessi.glidegamificationengine.type.AchievementCategoryType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,22 +25,19 @@ public class AchievementServiceImpl implements AchievementService {
     @Autowired
     private AchievementRepository achievementRepository;
 
-    @Autowired
-    private AchievementCategoryServiceImpl achievementCategoryService;
-
     /* Methods callable from Service Layer */
 
 
     /* Methods callable from Controller Layer */
 
     @Override
-    public AchievementDto createAchievement(String achievementName, MultipartFile achievementIcon, String achievementCategoryName) throws IOException {
+    public AchievementDto createAchievement(String achievementName, MultipartFile achievementIcon, String achievementCategory) throws IOException {
         AchievementEntity achievementEntity = new AchievementEntity();
         if (achievementName.isEmpty())
-            throw new ConstraintViolationException("Name cannot be empty, please introduce a name");
+            throw new ConstraintViolationException("Name cannot be empty, please introduce a name.");
         achievementEntity.setName(achievementName);
         achievementEntity.setIcon(Base64.getEncoder().encodeToString(achievementIcon.getBytes()));
-        achievementEntity.setAchievementCategoryEntity(achievementCategoryService.getAchievementCategoryEntityByName(achievementCategoryName));
+        achievementEntity.setCategory(AchievementCategoryType.fromString(achievementCategory));
 
         AchievementEntity savedAchievementEntity;
         try{
@@ -45,24 +45,39 @@ public class AchievementServiceImpl implements AchievementService {
         }
         catch (Exception exception){
             if (exception.getCause() instanceof org.hibernate.exception.ConstraintViolationException)
-                throw new ConstraintViolationException("Name '" + achievementEntity.getName() + "' already used, please pick a different name");
+                throw new ConstraintViolationException("Name '" + achievementEntity.getName() + "' already used, please pick a different name.");
             else throw exception;
         }
         return AchievementMapper.mapToAchievementDto(savedAchievementEntity);
     }
 
     @Override
-    public List<AchievementDto> getAllAchievements() {
+    public List<AchievementDto> getAchievements() {
         List<AchievementEntity> achievementEntities = achievementRepository.findAll();
         return achievementEntities.stream().map((achievementEntity -> AchievementMapper.mapToAchievementDto(achievementEntity)))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public AchievementDto getAchievementById(Long achievementId) {
+    public AchievementDto getAchievement(Long achievementId) {
         AchievementEntity achievementEntity = achievementRepository.findById(achievementId)
-                .orElseThrow(() -> new ResourceNotFoundException("Achievement with id '" + achievementId + "' not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Achievement with id '" + achievementId + "' not found."));
         return AchievementMapper.mapToAchievementDto(achievementEntity);
+    }
+
+    @Override
+    public List<AchievementCategoryDto> getAchievementCategories() {
+        List<AchievementCategoryDto> achievementCategoryDtos = new ArrayList<>();
+        for (AchievementCategoryType value : AchievementCategoryType.values()) {
+            achievementCategoryDtos.add(new AchievementCategoryDto(value.name(), value.getDescription(), value.isNumerical()));
+        }
+        return achievementCategoryDtos;
+    }
+
+    @Override
+    public AchievementCategoryDto getAchievementCategory(String achievementCategoryName) {
+        AchievementCategoryType achievementCategory = AchievementCategoryType.fromString(achievementCategoryName);
+        return new AchievementCategoryDto(achievementCategory.name(), achievementCategory.getDescription(), achievementCategory.isNumerical());
     }
 
     /*

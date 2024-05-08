@@ -1,17 +1,20 @@
 package edu.upc.gessi.glidegamificationengine.entity;
 
+import edu.upc.gessi.glidegamificationengine.type.AchievementCategoryType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Achievement")
+@Table(name = "achievement")
 public class AchievementEntity {
 
     @Id
@@ -25,8 +28,11 @@ public class AchievementEntity {
     @Column(name = "icon")
     private String icon;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY) //cascade = CascadeType.ALL
-    @JoinColumn(name = "achievementCategoryName", nullable = false)
-    private AchievementCategoryEntity achievementCategoryEntity;
+    @Column(name = "category", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AchievementCategoryType category;
+
+    @OneToMany(mappedBy = "achievementEntity", fetch = FetchType.LAZY)
+    private List<AchievementAssignmentEntity> achievementAssignmentEntities;
 
 }
