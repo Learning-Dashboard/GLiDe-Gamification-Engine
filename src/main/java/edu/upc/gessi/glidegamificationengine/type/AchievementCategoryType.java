@@ -23,7 +23,7 @@ public enum AchievementCategoryType {
             achievementCategoryType = AchievementCategoryType.valueOf(string);
         }
         catch (IllegalArgumentException e){
-            throw new TypeNotCorrectException("Name '" + string + "' not a valid achievement category type (Only available: " +
+            throw new TypeNotCorrectException("Achievement category name '" + string + "' not a valid achievement category type (Only available: " +
                     Stream.of(AchievementCategoryType.values()).map(value -> "'" + value.toString() + "'").collect(Collectors.joining(", ")) + ").");
         }
         return achievementCategoryType;

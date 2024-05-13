@@ -33,10 +33,10 @@ public class AchievementServiceImpl implements AchievementService {
     @Override
     public AchievementDto createAchievement(String achievementName, MultipartFile achievementIcon, String achievementCategory) throws IOException {
         AchievementEntity achievementEntity = new AchievementEntity();
-        if (achievementName.isEmpty())
-            throw new ConstraintViolationException("Name cannot be empty, please introduce a name.");
+        if (achievementName.isBlank())
+            throw new ConstraintViolationException("Achievement name cannot be blank, please introduce a name.");
         achievementEntity.setName(achievementName);
-        achievementEntity.setIcon(Base64.getEncoder().encodeToString(achievementIcon.getBytes()));
+        if (achievementIcon != null) achievementEntity.setIcon(Base64.getEncoder().encodeToString(achievementIcon.getBytes()));
         achievementEntity.setCategory(AchievementCategoryType.fromString(achievementCategory));
 
         AchievementEntity savedAchievementEntity;
@@ -45,7 +45,7 @@ public class AchievementServiceImpl implements AchievementService {
         }
         catch (Exception exception){
             if (exception.getCause() instanceof org.hibernate.exception.ConstraintViolationException)
-                throw new ConstraintViolationException("Name '" + achievementEntity.getName() + "' already used, please pick a different name.");
+                throw new ConstraintViolationException("Achievement name '" + achievementEntity.getName() + "' already used, please pick a different name.");
             else throw exception;
         }
         return AchievementMapper.mapToAchievementDto(savedAchievementEntity);
@@ -69,7 +69,7 @@ public class AchievementServiceImpl implements AchievementService {
     public List<AchievementCategoryDto> getAchievementCategories() {
         List<AchievementCategoryDto> achievementCategoryDtos = new ArrayList<>();
         for (AchievementCategoryType value : AchievementCategoryType.values()) {
-            achievementCategoryDtos.add(new AchievementCategoryDto(value.name(), value.getDescription(), value.isNumerical()));
+            achievementCategoryDtos.add(new AchievementCategoryDto(value, value.getDescription(), value.isNumerical()));
         }
         return achievementCategoryDtos;
     }
@@ -77,7 +77,7 @@ public class AchievementServiceImpl implements AchievementService {
     @Override
     public AchievementCategoryDto getAchievementCategory(String achievementCategoryName) {
         AchievementCategoryType achievementCategory = AchievementCategoryType.fromString(achievementCategoryName);
-        return new AchievementCategoryDto(achievementCategory.name(), achievementCategory.getDescription(), achievementCategory.isNumerical());
+        return new AchievementCategoryDto(achievementCategory, achievementCategory.getDescription(), achievementCategory.isNumerical());
     }
 
     /*
