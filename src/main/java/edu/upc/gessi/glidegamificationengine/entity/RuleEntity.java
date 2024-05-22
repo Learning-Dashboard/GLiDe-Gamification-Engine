@@ -30,4 +30,10 @@ public abstract class RuleEntity {
     @OneToOne(mappedBy = "ruleEntity", fetch = FetchType.LAZY)
     private AchievementAssignmentEntity achievementAssignmentEntity;
 
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_subject_acronym", referencedColumnName = "subject_acronym", nullable = false)
+    @JoinColumn(name = "game_course", referencedColumnName = "course", nullable = false)
+    @JoinColumn(name = "game_period", referencedColumnName = "period", nullable = false)
+    private GameEntity gameEntity;
+
 }

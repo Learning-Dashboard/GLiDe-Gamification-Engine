@@ -26,8 +26,8 @@ public class DateRuleEntity extends RuleEntity {
     @Column(name = "end_date", nullable = false)
     private Date endDate;
 
-    public DateRuleEntity(Long id, String name, Integer repetitions, Date startDate, Date endDate) {
-        super(id, name, RuleType.DateRule, null);
+    public DateRuleEntity(Long id, String name, GameEntity gameEntity, Integer repetitions, Date startDate, Date endDate) {
+        super(id, name, RuleType.Date, null, gameEntity);
         this.repetitions = repetitions;
         this.startDate = startDate;
         this.endDate = endDate;

@@ -16,8 +16,8 @@ public class SimpleRuleEntity extends RuleEntity {
     @Column(name = "repetitions", nullable = false)
     private Integer repetitions;
 
-    public SimpleRuleEntity(Long id, String name, Integer repetitions) {
-        super(id, name, RuleType.SimpleRule, null);
+    public SimpleRuleEntity(Long id, String name, GameEntity gameEntity, Integer repetitions) {
+        super(id, name, RuleType.Simple, null, gameEntity);
         this.repetitions = repetitions;
     }
 

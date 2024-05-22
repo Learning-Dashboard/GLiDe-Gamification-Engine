@@ -45,8 +45,8 @@ public class AchievementAssignmentEntity {
     private ConditionType condition;
 
     @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name="achievement_assignment_condition_parameters", joinColumns = {@JoinColumn(name = "achievement_assignment_rule_id"),
-                                                                                        @JoinColumn(name = "achievement_assignment_achievement_id")})
+    @CollectionTable(name="achievement_assignment_condition_parameters", joinColumns = {@JoinColumn(name = "achievement_assignment_rule_id", referencedColumnName = "rule_id"),
+                                                                                        @JoinColumn(name = "achievement_assignment_achievement_id", referencedColumnName = "achievement_id")})
     private List<Float> conditionParameters;
 
     @Column(name = "achievement_units")
