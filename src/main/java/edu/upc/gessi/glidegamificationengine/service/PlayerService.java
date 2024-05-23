@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface PlayerService {
 
-    List<PlayerAchievementDto> getPlayerAchievements(String playerPlayername, String achievementCategory);
+    List<PlayerAchievementDto> getPlayerAchievements(String playerPlayername, Boolean achievementAttained, String achievementCategory);
 
 }

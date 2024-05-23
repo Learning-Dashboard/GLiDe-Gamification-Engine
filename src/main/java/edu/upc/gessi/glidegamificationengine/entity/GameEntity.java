@@ -46,6 +46,9 @@ public class GameEntity {
     @OneToMany(mappedBy = "gameEntity", fetch = FetchType.LAZY)
     private List<GameGroupEntity> gameGroupEntities;
 
+    @OneToMany(mappedBy = "gameEntity", fetch = FetchType.LAZY)
+    private List<RuleEntity> ruleEntities;
+
     public StateType getState() {
         return StateType.getState(startDate, endDate);
     }

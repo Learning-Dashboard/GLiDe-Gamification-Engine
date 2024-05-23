@@ -1,14 +1,14 @@
 package edu.upc.gessi.glidegamificationengine.service.impl;
 
 import edu.upc.gessi.glidegamificationengine.dto.PlayerAchievementDto;
-import edu.upc.gessi.glidegamificationengine.entity.LoggedAchievementEntity;
-import edu.upc.gessi.glidegamificationengine.entity.PlayerEntity;
+import edu.upc.gessi.glidegamificationengine.entity.*;
 import edu.upc.gessi.glidegamificationengine.exception.ResourceNotFoundException;
 import edu.upc.gessi.glidegamificationengine.repository.IndividualPlayerRepository;
 import edu.upc.gessi.glidegamificationengine.repository.PlayerRepository;
 import edu.upc.gessi.glidegamificationengine.repository.TeamPlayerRepository;
 import edu.upc.gessi.glidegamificationengine.service.PlayerService;
 import edu.upc.gessi.glidegamificationengine.type.AchievementCategoryType;
+import edu.upc.gessi.glidegamificationengine.type.PlayerType;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,24 +44,24 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     @Transactional
-    public List<PlayerAchievementDto> getPlayerAchievements(String playerPlayername, String achievementCategory) {
+    public List<PlayerAchievementDto> getPlayerAchievements(String playerPlayername, Boolean achievementAttained, String achievementCategory) {
         PlayerEntity playerEntity = getPlayerEntityByPlayername(playerPlayername);
         if(achievementCategory == null) {
             List<PlayerAchievementDto> playerAchievementDtos = new ArrayList<>();
             for (AchievementCategoryType value : AchievementCategoryType.values()) {
-                playerAchievementDtos = Stream.concat(playerAchievementDtos.stream(), getPlayerAchievements(playerPlayername, value.toString()).stream()).toList();
+                playerAchievementDtos = Stream.concat(playerAchievementDtos.stream(), getPlayerAchievements(playerPlayername, achievementAttained, value.toString()).stream()).toList();
             }
             return playerAchievementDtos;
         }
         else {
             AchievementCategoryType achievementCategoryType = AchievementCategoryType.fromString(achievementCategory);
             List<LoggedAchievementEntity> loggedAchievementEntities = playerEntity.getLoggedAchievementEntities(achievementCategoryType);
-            Map<Long, PlayerAchievementDto> playerAchievementDtos = new HashMap<>();
+            Map<Long, PlayerAchievementDto> attainedPlayerAchievementDtos = new HashMap<>();
 
             for (int i = 0; i < loggedAchievementEntities.size(); i++) {
                 Long currentAchievementId = loggedAchievementEntities.get(i).getAchievementAssignmentEntity().getAchievementEntity().getId();
-                if (playerAchievementDtos.containsKey(currentAchievementId)) {
-                    PlayerAchievementDto existingPlayerAchievementDto = playerAchievementDtos.get(currentAchievementId);
+                if (attainedPlayerAchievementDtos.containsKey(currentAchievementId)) {
+                    PlayerAchievementDto existingPlayerAchievementDto = attainedPlayerAchievementDtos.get(currentAchievementId);
                     if (achievementCategoryType.isNumerical()) {
                         existingPlayerAchievementDto.setUnits(existingPlayerAchievementDto.getUnits() + loggedAchievementEntities.get(i).getAchievementAssignmentEntity().getAchievementUnits());
                         if (existingPlayerAchievementDto.getDate().before(loggedAchievementEntities.get(i).getDate())) {
@@ -73,7 +73,7 @@ public class PlayerServiceImpl implements PlayerService {
                             existingPlayerAchievementDto.setDate(loggedAchievementEntities.get(i).getDate());
                         }
                     }
-                    playerAchievementDtos.replace(currentAchievementId, existingPlayerAchievementDto);
+                    attainedPlayerAchievementDtos.replace(currentAchievementId, existingPlayerAchievementDto);
                 } else {
                     PlayerAchievementDto newPlayerAchievementDto = new PlayerAchievementDto();
                     newPlayerAchievementDto.setCategory(loggedAchievementEntities.get(i).getAchievementAssignmentEntity().getAchievementEntity().getCategory());
@@ -85,11 +85,40 @@ public class PlayerServiceImpl implements PlayerService {
                         newPlayerAchievementDto.setUnits(1);
                     }
                     newPlayerAchievementDto.setDate(loggedAchievementEntities.get(i).getDate());
-                    playerAchievementDtos.put(currentAchievementId, newPlayerAchievementDto);
+                    attainedPlayerAchievementDtos.put(currentAchievementId, newPlayerAchievementDto);
                 }
             }
 
-            return playerAchievementDtos.values().stream().collect(Collectors.toList());
+            if (achievementAttained == null || !achievementAttained) {
+                TeamPlayerEntity teamPlayerEntity;
+                if (playerEntity.getType().equals(PlayerType.Team)) {
+                    teamPlayerEntity = (TeamPlayerEntity) playerEntity;
+                } else {
+                    IndividualPlayerEntity individualPlayerEntity = (IndividualPlayerEntity) playerEntity;
+                    teamPlayerEntity = individualPlayerEntity.getTeamPlayerEntity();
+                }
+
+                Map<Long, PlayerAchievementDto> pendingPlayerAchievementDtos = new HashMap<>();
+                for(RuleEntity ruleEntity : teamPlayerEntity.getProjectEntity().getGameGroupEntity().getGameEntity().getRuleEntities()) {
+                    AchievementAssignmentEntity achievementAssignmentEntity = ruleEntity.getAchievementAssignmentEntity();
+                    AchievementEntity achievementEntity = ruleEntity.getAchievementAssignmentEntity().getAchievementEntity();
+                    if (achievementAssignmentEntity.getAssessmentLevel().equals(playerEntity.getType()) && achievementEntity.getCategory().equals(achievementCategoryType) && !attainedPlayerAchievementDtos.containsKey(achievementEntity.getId())) {
+                        PlayerAchievementDto pendingPlayerAchievementDto = new PlayerAchievementDto();
+                        pendingPlayerAchievementDto.setCategory(achievementEntity.getCategory());
+                        pendingPlayerAchievementDto.setName(achievementEntity.getName());
+                        pendingPlayerAchievementDto.setIcon(achievementEntity.getIcon());
+                        pendingPlayerAchievementDto.setUnits(0);
+                        pendingPlayerAchievementDto.setDate(null);
+                        pendingPlayerAchievementDtos.put(achievementEntity.getId(), pendingPlayerAchievementDto);
+                    }
+                }
+
+                if (achievementAttained == null) return Stream.concat(attainedPlayerAchievementDtos.values().stream(), pendingPlayerAchievementDtos.values().stream()).collect(Collectors.toList());
+                else return pendingPlayerAchievementDtos.values().stream().collect(Collectors.toList());
+            }
+            else {  //achievementAttained
+                return attainedPlayerAchievementDtos.values().stream().collect(Collectors.toList());
+            }
         }
     }
 

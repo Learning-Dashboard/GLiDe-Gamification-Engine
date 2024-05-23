@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class CompetitionServiceImpl implements CompetitionService {

@@ -37,7 +37,7 @@ public abstract class PlayerEntity {
     public List<LoggedAchievementEntity> getLoggedAchievementEntities(AchievementCategoryType achievementCategory) {
         List<LoggedAchievementEntity> filteredLoggedAchievementEntities = new ArrayList<>();
         for (int i = 0; i < loggedAchievementEntities.size(); i++) {
-            if (loggedAchievementEntities.get(i).getAchievementAssignmentEntity().getAchievementEntity().getCategory() == achievementCategory) {
+            if (loggedAchievementEntities.get(i).getAchievementAssignmentEntity().getAchievementEntity().getCategory().equals(achievementCategory)) {
                 filteredLoggedAchievementEntities.add(loggedAchievementEntities.get(i));
             }
         }
