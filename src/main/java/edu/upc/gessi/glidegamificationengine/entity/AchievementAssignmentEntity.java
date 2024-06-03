@@ -1,6 +1,7 @@
 package edu.upc.gessi.glidegamificationengine.entity;
 
 import edu.upc.gessi.glidegamificationengine.entity.key.AchievementAssignmentKey;
+import edu.upc.gessi.glidegamificationengine.type.ActionCategoryType;
 import edu.upc.gessi.glidegamificationengine.type.ConditionType;
 import edu.upc.gessi.glidegamificationengine.type.PlayerType;
 import jakarta.persistence.*;
@@ -10,6 +11,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Check;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -58,5 +62,72 @@ public class AchievementAssignmentEntity {
 
     @OneToMany(mappedBy = "achievementAssignmentEntity", fetch = FetchType.LAZY)
     private List<LoggedAchievementEntity> loggedAchievementEntities;
+
+    @ManyToMany
+    @JoinTable(name = "achievement_assignment_accomplished_logged_action",
+            joinColumns = {@JoinColumn(name = "achievement_assignment_rule_id", referencedColumnName = "rule_id"),
+                           @JoinColumn(name = "achievement_assignment_achievement_id", referencedColumnName = "achievement_id")},
+            inverseJoinColumns = {@JoinColumn(name = "logged_action_evaluable_action_id", referencedColumnName = "evaluable_action_id"),
+                                  @JoinColumn(name = "logged_action_player_playername", referencedColumnName = "player_playername"),
+                                  @JoinColumn(name = "logged_action_timestamp", referencedColumnName = "timestamp")})
+    private List<LoggedActionEntity> loggedActionEntities;
+
+    public void addLoggedAchievementEntity(LoggedAchievementEntity loggedAchievementEntity) {
+        if (loggedAchievementEntities == null) {
+            loggedAchievementEntities = new ArrayList<>();
+        }
+        loggedAchievementEntities.add(loggedAchievementEntity);
+    }
+
+    public void addLoggedActionEntity(LoggedActionEntity loggedActionEntity) {
+        if (loggedActionEntities == null) {
+            loggedActionEntities = new ArrayList<>();
+        }
+        loggedActionEntities.add(loggedActionEntity);
+    }
+
+    public Boolean evaluateLoggedActionEntity(LoggedActionEntity loggedActionEntity) {
+        Boolean loggedActionEntityAdded = false;
+
+        if (loggedActionEntity.getType().equals(ActionCategoryType.PlayerPerformance)) {
+            PlayerPerformanceLoggedActionEntity playerPerformanceLoggedActionEntity = (PlayerPerformanceLoggedActionEntity) loggedActionEntity;
+            Float value = playerPerformanceLoggedActionEntity.getValue();
+            Boolean conditionMet = condition.checkCondition(value, conditionParameters);
+            if (conditionMet) {
+                addLoggedActionEntity(loggedActionEntity);
+                loggedActionEntityAdded = true;
+            }
+        }
+
+        return loggedActionEntityAdded;
+    }
+
+    public Integer getLoggedActionEntitiesNumber(String evaluableActionId, String playerPlayername) {
+        Integer loggedActionEntitiesNumber = 0;
+
+        for (LoggedActionEntity loggedActionEntity : loggedActionEntities) {
+            if (loggedActionEntity.getEvaluableActionEntity().getId().equals(evaluableActionId) && loggedActionEntity.getPlayerEntity().getPlayername().equals(playerPlayername)) {
+                loggedActionEntitiesNumber++;
+            }
+        }
+
+        return loggedActionEntitiesNumber;
+    }
+
+    public Integer getLoggedActionEntitiesNumber(String evaluableActionId, String playerPlayername, Date startDate, Date endDate) {
+        Integer loggedActionEntitiesNumber = 0;
+
+        for (LoggedActionEntity loggedActionEntity : loggedActionEntities) {
+            if (loggedActionEntity.getEvaluableActionEntity().getId().equals(evaluableActionId) && loggedActionEntity.getPlayerEntity().getPlayername().equals(playerPlayername)) {
+                Timestamp timestamp = loggedActionEntity.getId().getTimestamp();
+                Date timestampDate = Date.valueOf(timestamp.toLocalDateTime().toLocalDate());
+                if (!timestampDate.before(startDate) && !timestampDate.after(endDate)) {
+                    loggedActionEntitiesNumber++;
+                }
+            }
+        }
+
+        return loggedActionEntitiesNumber;
+    }
 
 }

@@ -35,4 +35,11 @@ public class LoggedAchievementEntity {
     @JoinColumn(name = "playername", nullable = false)
     private PlayerEntity playerEntity;
 
+    public LoggedAchievementEntity(Date date, AchievementAssignmentEntity achievementAssignmentEntity, PlayerEntity playerEntity) {
+        this.date = date;
+        this.messageShown = false;
+        this.achievementAssignmentEntity = achievementAssignmentEntity;
+        this.playerEntity = playerEntity;
+    }
+
 }

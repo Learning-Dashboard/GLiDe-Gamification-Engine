@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Date;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -35,5 +37,13 @@ public abstract class RuleEntity {
     @JoinColumn(name = "game_course", referencedColumnName = "course", nullable = false)
     @JoinColumn(name = "game_period", referencedColumnName = "period", nullable = false)
     private GameEntity gameEntity;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "evaluable_action_id", referencedColumnName = "id", nullable = false)
+    private EvaluableActionEntity evaluableActionEntity;
+
+    public abstract Boolean checkRuleValidity(Date currentDate);
+
+    public abstract Boolean evaluateRule(String evaluableActionId, String playerPlayername);
 
 }

@@ -26,11 +26,37 @@ public class DateRuleEntity extends RuleEntity {
     @Column(name = "end_date", nullable = false)
     private Date endDate;
 
-    public DateRuleEntity(Long id, String name, GameEntity gameEntity, Integer repetitions, Date startDate, Date endDate) {
-        super(id, name, RuleType.Date, null, gameEntity);
+    public DateRuleEntity(Long id, String name, GameEntity gameEntity, EvaluableActionEntity evaluableActionEntity, Integer repetitions, Date startDate, Date endDate) {
+        super(id, name, RuleType.Date, null, gameEntity, evaluableActionEntity);
         this.repetitions = repetitions;
         this.startDate = startDate;
         this.endDate = endDate;
+    }
+
+    @Override
+    public Boolean checkRuleValidity(Date currentDate) {
+        if (currentDate.before(startDate) || currentDate.after(endDate)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public Boolean evaluateRule(String evaluableActionId, String playerPlayername) {
+        Boolean loggedAchievementEntitiesRequired = false;
+
+        Integer loggedActionEntitiesNumber = super.getAchievementAssignmentEntity().getLoggedActionEntitiesNumber(evaluableActionId, playerPlayername, startDate, endDate);
+        if (loggedActionEntitiesNumber%repetitions == 0) {
+            if (super.getAchievementAssignmentEntity().getOnlyFirstTime()) {
+                loggedAchievementEntitiesRequired = (loggedActionEntitiesNumber.equals(repetitions));
+            }
+            else {
+                loggedAchievementEntitiesRequired = true;
+            }
+        }
+
+        return loggedAchievementEntitiesRequired;
     }
 
 }

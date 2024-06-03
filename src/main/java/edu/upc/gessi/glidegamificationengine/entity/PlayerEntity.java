@@ -24,8 +24,11 @@ public abstract class PlayerEntity {
     @Column(name = "playername")
     private String playername;
 
+    @Column(name = "points", nullable = false)
+    private Integer points;
+
     @Column(name = "level", nullable = false)
-    private int level;
+    private Integer level;
 
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -33,6 +36,13 @@ public abstract class PlayerEntity {
 
     @OneToMany(mappedBy = "playerEntity", fetch = FetchType.LAZY)
     private List<LoggedAchievementEntity> loggedAchievementEntities;
+
+    public void addLoggedAchievementEntity(LoggedAchievementEntity loggedAchievementEntity) {
+        if (loggedAchievementEntities == null) {
+            loggedAchievementEntities = new ArrayList<>();
+        }
+        loggedAchievementEntities.add(loggedAchievementEntity);
+    }
 
     public List<LoggedAchievementEntity> getLoggedAchievementEntities(AchievementCategoryType achievementCategory) {
         List<LoggedAchievementEntity> filteredLoggedAchievementEntities = new ArrayList<>();
@@ -43,4 +53,5 @@ public abstract class PlayerEntity {
         }
         return filteredLoggedAchievementEntities;
     }
+
 }

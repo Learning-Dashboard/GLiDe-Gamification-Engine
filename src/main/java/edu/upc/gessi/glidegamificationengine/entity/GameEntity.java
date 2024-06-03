@@ -75,4 +75,13 @@ public class GameEntity {
         return individualPlayerAvatars;
     }
 
+    public Integer calculateLevel(Integer points) {
+        Integer level = 1;
+        while (true) {
+            Integer necessaryPoints = (int) (levelPolicyFunctionParameters.getFirst() * Math.pow(levelPolicyFunctionParameters.get(1), (level * levelPolicyFunctionParameters.getLast())));
+            if (necessaryPoints > points) return level-1;
+            level++;
+        }
+    }
+
 }

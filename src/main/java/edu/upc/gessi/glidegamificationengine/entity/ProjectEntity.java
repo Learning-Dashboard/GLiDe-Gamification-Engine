@@ -24,8 +24,8 @@ public class ProjectEntity {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "learning_dashboard_identifier", nullable = false)
-    private String learningDashboardIdentifier;
+    @Column(name = "learningdashboard_identifier", nullable = false)
+    private String learningdashboardIdentifier;
 
     @Column(name = "github_identifier", nullable = false)
     private String githubIdentifier;

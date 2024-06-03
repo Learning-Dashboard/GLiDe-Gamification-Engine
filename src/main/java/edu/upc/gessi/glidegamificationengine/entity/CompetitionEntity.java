@@ -1,5 +1,6 @@
 package edu.upc.gessi.glidegamificationengine.entity;
 
+import edu.upc.gessi.glidegamificationengine.type.AnonymizationType;
 import edu.upc.gessi.glidegamificationengine.type.CompetitionCategoryType;
 import edu.upc.gessi.glidegamificationengine.type.ExtentType;
 import edu.upc.gessi.glidegamificationengine.type.PlayerType;
@@ -43,6 +44,10 @@ public class CompetitionEntity {
     @Column(name = "extent", nullable = false)
     @Enumerated(EnumType.STRING)
     private ExtentType extent;
+
+    @Column(name = "anonymization", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AnonymizationType anonymization;
 
     @Column(name = "student_visible", nullable = false)
     private Boolean studentVisible;

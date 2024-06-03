@@ -23,4 +23,8 @@ public class IndividualPlayerEntity extends PlayerEntity {
     @JoinColumn(name = "team_player_playername", nullable = false)
     private TeamPlayerEntity teamPlayerEntity;
 
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_user_username", nullable = false)
+    private StudentUserEntity studentUserEntity;
+
 }
