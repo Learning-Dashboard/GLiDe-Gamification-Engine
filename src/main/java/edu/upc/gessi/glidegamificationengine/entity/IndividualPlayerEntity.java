@@ -12,12 +12,12 @@ import lombok.Setter;
 @Table(name = "individual_player")
 public class IndividualPlayerEntity extends PlayerEntity {
 
+    @Column(name = "role")
+    private String role;
+
     @Lob
     @Column(name = "avatar", nullable = false)
     private String avatar;
-
-    @Column(name = "role")
-    private String role;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "team_player_playername", nullable = false)

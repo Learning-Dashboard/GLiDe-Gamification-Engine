@@ -1,6 +1,8 @@
 package edu.upc.gessi.glidegamificationengine.controller;
 
+import edu.upc.gessi.glidegamificationengine.dto.IndividualPlayerDto;
 import edu.upc.gessi.glidegamificationengine.dto.PlayerAchievementDto;
+import edu.upc.gessi.glidegamificationengine.dto.TeamPlayerDto;
 import edu.upc.gessi.glidegamificationengine.service.PlayerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -21,6 +23,28 @@ public class PlayerController {
 
     @Autowired
     private PlayerService playerService;
+
+    @Operation(summary = "Get team player", description = "Get a team player. The team player is identified by its playername. The team player is returned as a TeamPlayerDto object.", tags = { "players" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK: TeamPlayerDto object.", content = @Content(schema = @Schema(implementation = TeamPlayerDto.class))),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND: Team player with the given playername not found.", content = @Content)
+    })
+    @GetMapping(value="/teams/{playername}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TeamPlayerDto> getTeamPlayer(@PathVariable("playername") String teamPlayerPlayername) {
+        TeamPlayerDto teamPlayerDto = playerService.getTeamPlayer(teamPlayerPlayername);
+        return ResponseEntity.ok(teamPlayerDto);
+    }
+
+    @Operation(summary = "Get individual player", description = "Get an individual player. The individual player is identified by its playername. The individual player is returned as an IndividualPlayerDto object.", tags = { "players" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK: IndividualPlayerDto object.", content = @Content(schema = @Schema(implementation = IndividualPlayerDto.class))),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND: Individual player with the given playername not found.", content = @Content)
+    })
+    @GetMapping(value="/individuals/{playername}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<IndividualPlayerDto> getIndividualPlayer(@PathVariable("playername") String individualPlayerPlayername) {
+        IndividualPlayerDto individualPlayerDto = playerService.getIndividualPlayer(individualPlayerPlayername);
+        return ResponseEntity.ok(individualPlayerDto);
+    }
 
     @Operation(summary = "Get player achievements", description = "Get the attained and/or pending achievements of a player optionally filtered by a specific achievement category. The player is identified by its playername. When only attained achievements must be retrieved, achievement attained must be true and, when only pending achievements must retrieved, achievement attained must be false (if not given, attained and pending achievements are going to be retrieved). The achievement category name must be a valid achievement category type (Points, Badges or Resources) when given (if not given, achievements from all achievement category types are going to be retrieved). The player achievements are returned as a list of PlayerAchievementDto objects in which, if the achievement category type is numerical (i.e. Points and Resources), the date corresponds to the last time units were assigned, while if the achievement category is not numerical (i.e. Badges), the date corresponds to first time a unit was assigned).", tags = { "players" })
     @ApiResponses(value = {

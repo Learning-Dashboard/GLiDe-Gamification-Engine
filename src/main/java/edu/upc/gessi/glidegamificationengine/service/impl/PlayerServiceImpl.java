@@ -1,8 +1,11 @@
 package edu.upc.gessi.glidegamificationengine.service.impl;
 
+import edu.upc.gessi.glidegamificationengine.dto.IndividualPlayerDto;
 import edu.upc.gessi.glidegamificationengine.dto.PlayerAchievementDto;
+import edu.upc.gessi.glidegamificationengine.dto.TeamPlayerDto;
 import edu.upc.gessi.glidegamificationengine.entity.*;
 import edu.upc.gessi.glidegamificationengine.exception.ResourceNotFoundException;
+import edu.upc.gessi.glidegamificationengine.mapper.PlayerMapper;
 import edu.upc.gessi.glidegamificationengine.repository.IndividualPlayerRepository;
 import edu.upc.gessi.glidegamificationengine.repository.PlayerRepository;
 import edu.upc.gessi.glidegamificationengine.repository.TeamPlayerRepository;
@@ -41,6 +44,20 @@ public class PlayerServiceImpl implements PlayerService {
 
 
     /* Methods callable from Controller Layer */
+
+    @Override
+    public TeamPlayerDto getTeamPlayer(String teamPlayerPlayername) {
+        TeamPlayerEntity teamPlayerEntity = teamPlayerRepository.findById(teamPlayerPlayername)
+                .orElseThrow(() -> new ResourceNotFoundException("Team player with playername '" + teamPlayerPlayername + "' not found."));
+        return PlayerMapper.mapToTeamPlayerDto(teamPlayerEntity);
+    }
+
+    @Override
+    public IndividualPlayerDto getIndividualPlayer(String individualPlayerPlayername) {
+        IndividualPlayerEntity individualPlayerEntity = individualPlayerRepository.findById(individualPlayerPlayername)
+                .orElseThrow(() -> new ResourceNotFoundException("Individual player with playername '" + individualPlayerPlayername + "' not found."));
+        return PlayerMapper.mapToIndividualPlayerDto(individualPlayerEntity);
+    }
 
     @Override
     @Transactional
