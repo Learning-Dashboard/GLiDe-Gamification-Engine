@@ -35,15 +35,15 @@ public class LoggedActionServiceImpl implements LoggedActionService {
     @Value("${learningdashboard.api.base-url}")
     private String learningdashboardAPIBaseURL;
 
-    @Value("${learningdashboard.api.password}")
-    private String learningdashboardAPIPassword;
+    @Value("${learningdashboard.api.key}")
+    private String learningdashboardAPIKey;
 
 
     /* Private methods */
 
     private LoggedActionEntity createLoggedActionEntityByKeyEntities(LoggedActionKey loggedActionKey, EvaluableActionEntity evaluableActionEntity, PlayerEntity playerEntity, Timestamp timestamp) {
         String sourceDataAPIURL = "";
-        String sourceDataAPIPassword = "";
+        String sourceDataAPIKey = "";
 
         if (evaluableActionEntity.getSourceDataTool().equals(SourceDataToolType.LearningDashboard)) {
             sourceDataAPIURL = learningdashboardAPIBaseURL + evaluableActionEntity.getSourceDataAPIEndpoint();
@@ -58,12 +58,12 @@ public class LoggedActionServiceImpl implements LoggedActionService {
                 else sourceDataAPIURL = sourceDataAPIURL.replaceFirst("\\*", evaluableActionEntity.getName() + "_" + individualPlayerEntity.getStudentUserEntity().getGithubUsername());
                 sourceDataAPIURL = sourceDataAPIURL.replaceFirst("\\*", individualPlayerEntity.getTeamPlayerEntity().getProjectEntity().getLearningdashboardIdentifier());
             }
-            sourceDataAPIPassword = learningdashboardAPIPassword;
+            sourceDataAPIKey = learningdashboardAPIKey;
         }
 
         String jsonString = webClient.get()
                 .uri(sourceDataAPIURL)
-                .header("password", sourceDataAPIPassword)
+                .header("password", sourceDataAPIKey)
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
