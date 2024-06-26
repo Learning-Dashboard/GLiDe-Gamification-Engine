@@ -3,6 +3,7 @@ package edu.upc.gessi.glidegamificationengine.service.impl;
 import edu.upc.gessi.glidegamificationengine.entity.AchievementAssignmentEntity;
 import edu.upc.gessi.glidegamificationengine.entity.LoggedAchievementEntity;
 import edu.upc.gessi.glidegamificationengine.entity.PlayerEntity;
+import edu.upc.gessi.glidegamificationengine.exception.ResourceNotFoundException;
 import edu.upc.gessi.glidegamificationengine.repository.LoggedAchievementRepository;
 import edu.upc.gessi.glidegamificationengine.service.LoggedAchievementService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,11 @@ public class LoggedAchievementServiceImpl implements LoggedAchievementService {
         achievementAssignmentEntity.addLoggedAchievementEntity(loggedAchievementEntity);
         playerEntity.addLoggedAchievementEntity(loggedAchievementEntity);
         return loggedAchievementRepository.save(loggedAchievementEntity);
+    }
+
+    protected LoggedAchievementEntity getLoggedAchievementEntityById(Long loggedAchievementId) {
+        return loggedAchievementRepository.findById(loggedAchievementId)
+                .orElseThrow(() -> new ResourceNotFoundException("Logged achievement with id '" + loggedAchievementId + "' not found."));
     }
 
 

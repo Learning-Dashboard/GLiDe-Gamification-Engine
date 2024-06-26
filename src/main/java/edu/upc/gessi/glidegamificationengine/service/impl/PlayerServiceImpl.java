@@ -2,6 +2,7 @@ package edu.upc.gessi.glidegamificationengine.service.impl;
 
 import edu.upc.gessi.glidegamificationengine.dto.IndividualPlayerDto;
 import edu.upc.gessi.glidegamificationengine.dto.PlayerAchievementDto;
+import edu.upc.gessi.glidegamificationengine.dto.PlayerLoggedAchievementDto;
 import edu.upc.gessi.glidegamificationengine.dto.TeamPlayerDto;
 import edu.upc.gessi.glidegamificationengine.entity.*;
 import edu.upc.gessi.glidegamificationengine.exception.ResourceNotFoundException;
@@ -34,6 +35,9 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Autowired
     private IndividualPlayerRepository individualPlayerRepository;
+
+    @Autowired
+    private LoggedAchievementServiceImpl loggedAchievementService;
 
     /* Methods callable from Service Layer */
 
@@ -138,5 +142,42 @@ public class PlayerServiceImpl implements PlayerService {
             }
         }
     }
+
+    @Override
+    @Transactional
+    public List<PlayerLoggedAchievementDto> getPlayerLoggedAchievements(String playerPlayername, Boolean loggedAchievementViewed, String achievementCategory) {
+        PlayerEntity playerEntity = getPlayerEntityByPlayername(playerPlayername);
+        if(achievementCategory == null) {
+            List<PlayerLoggedAchievementDto> playerLoggedAchievementDtos = new ArrayList<>();
+            for (AchievementCategoryType value : AchievementCategoryType.values()) {
+                playerLoggedAchievementDtos = Stream.concat(playerLoggedAchievementDtos.stream(), getPlayerLoggedAchievements(playerPlayername, loggedAchievementViewed, value.toString()).stream()).toList();
+            }
+            return playerLoggedAchievementDtos;
+        }
+        else {
+            AchievementCategoryType achievementCategoryType = AchievementCategoryType.fromString(achievementCategory);
+            List<LoggedAchievementEntity> loggedAchievementEntities = playerEntity.getLoggedAchievementEntities(achievementCategoryType);
+            List<PlayerLoggedAchievementDto> playerLoggedAchievementDtos = new ArrayList<>();
+
+            for (LoggedAchievementEntity loggedAchievementEntity : loggedAchievementEntities) {
+                if (loggedAchievementViewed == null || (!loggedAchievementViewed && !loggedAchievementEntity.getViewed()) || (loggedAchievementViewed && loggedAchievementEntity.getViewed())) {
+                    PlayerLoggedAchievementDto playerLoggedAchievementDto = PlayerMapper.mapToPlayerLoggedAchievementDto(loggedAchievementEntity);
+                    playerLoggedAchievementDtos.add(playerLoggedAchievementDto);
+
+                }
+            }
+            return playerLoggedAchievementDtos;
+        }
+    }
+
+    @Override
+    @Transactional
+    public PlayerLoggedAchievementDto setPlayerLoggedAchievementViewed(String playerPlayername, Long loggedAchievementId) {
+        PlayerEntity playerEntity = getPlayerEntityByPlayername(playerPlayername);
+        LoggedAchievementEntity loggedAchievementEntity = loggedAchievementService.getLoggedAchievementEntityById(loggedAchievementId);
+        loggedAchievementEntity.setViewed(!loggedAchievementEntity.getViewed());
+        return PlayerMapper.mapToPlayerLoggedAchievementDto(loggedAchievementEntity);
+    }
+
 
 }

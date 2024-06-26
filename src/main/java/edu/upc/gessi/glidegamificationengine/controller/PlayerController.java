@@ -2,6 +2,7 @@ package edu.upc.gessi.glidegamificationengine.controller;
 
 import edu.upc.gessi.glidegamificationengine.dto.IndividualPlayerDto;
 import edu.upc.gessi.glidegamificationengine.dto.PlayerAchievementDto;
+import edu.upc.gessi.glidegamificationengine.dto.PlayerLoggedAchievementDto;
 import edu.upc.gessi.glidegamificationengine.dto.TeamPlayerDto;
 import edu.upc.gessi.glidegamificationengine.service.PlayerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -60,4 +61,28 @@ public class PlayerController {
         return ResponseEntity.ok(playerAchievementDtos);
     }
 
+    @Operation(summary = "Get player logged achievements", description = "Get the viewed and/or unviewed logged achievements of a player optionally filtered by a specific achievement category. The player is identified by its playername. When only viewed logged achievements must be retrieved, logged achievement viewed must be true and, when only unviewed logged achievements must retrieved, logged achievement viewed must be false (if not given, viewed and unviewed logged achievements are going to be retrieved). The achievement category name must be a valid achievement category type (Points, Badges or Resources) when given (if not given, logged achievements from all achievement category types are going to be retrieved). The player logged achievements are returned as a list of PlayerLoggedAchievementDto objects.", tags = { "players" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK: List of PlayerLoggedAchievementDto objects.", content = @Content(array = @ArraySchema(schema = @Schema(implementation = PlayerLoggedAchievementDto.class)))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST: The given achievement category name not a valid achievement category type (Only available: Points, Badges, Resources).", content = @Content),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND: Player with the given playername not found.", content = @Content)
+    })
+    @GetMapping(value ="/{playername}/loggedAchievements", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<PlayerLoggedAchievementDto>> getPlayerLoggedAchievements(@PathVariable("playername") String playerPlayername,
+                                                                                        @RequestParam(value = "viewed", required = false) Boolean loggedAchievementViewed,
+                                                                                        @RequestParam(value = "category", required = false) String achivementCategory) {
+        List<PlayerLoggedAchievementDto> playerLoggedAchievementDtos = playerService.getPlayerLoggedAchievements(playerPlayername, loggedAchievementViewed, achivementCategory);
+        return ResponseEntity.ok(playerLoggedAchievementDtos);
+    }
+
+    @Operation(summary = "Set player logged achievement viewed", description = "Set a player logged achievement as viewed or unviewed depending on the current boolean value. The player is identified by its playername and the logged achievement is identified by its id. The player logged achievement is returned as a PlayerLoggedAchievementDto object.", tags = { "players" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK: PlayerLoggedAchievementDto object.", content = @Content(schema = @Schema(implementation = PlayerLoggedAchievementDto.class))),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND: Player with the given playername and/or logged achievement with the given id not found.", content = @Content)
+    })
+    @PatchMapping(value = "/{playername}/loggedAchievements/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PlayerLoggedAchievementDto> setPlayerLoggedAchievementViewed(@PathVariable("playername") String playerPlayername, @PathVariable("id") Long loggedAchievementId) {
+        PlayerLoggedAchievementDto playerLoggedAchievementDto = playerService.setPlayerLoggedAchievementViewed(playerPlayername, loggedAchievementId);
+        return ResponseEntity.ok(playerLoggedAchievementDto);
+    }
 }

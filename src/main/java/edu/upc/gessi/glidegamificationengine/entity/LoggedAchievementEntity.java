@@ -23,8 +23,8 @@ public class LoggedAchievementEntity {
     @Column(name = "date", nullable = false)
     private Date date;
 
-    @Column(name = "message_shown", nullable = false)
-    private Boolean messageShown;
+    @Column(name = "viewed", nullable = false)
+    private Boolean viewed;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "rule_id", referencedColumnName = "rule_id", nullable = false)
@@ -37,7 +37,7 @@ public class LoggedAchievementEntity {
 
     public LoggedAchievementEntity(Date date, AchievementAssignmentEntity achievementAssignmentEntity, PlayerEntity playerEntity) {
         this.date = date;
-        this.messageShown = false;
+        this.viewed = false;
         this.achievementAssignmentEntity = achievementAssignmentEntity;
         this.playerEntity = playerEntity;
     }
