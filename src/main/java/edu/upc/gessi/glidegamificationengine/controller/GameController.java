@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,12 +28,12 @@ public class GameController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND: Game with the given subject acronym, course and period not found.", content = @Content),
             @ApiResponse(responseCode = "409", description = "CONFLICT: Game cannot be evaluated because its state is either 'Preparation' or 'Finished', and not 'Playing'.", content = @Content)
     })
-    @GetMapping(value ="/evaluate", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value ="/evaluate", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> evaluateGame(@RequestParam(value = "subjectAcronym") String gameSubjectAcronym,
                                                @RequestParam(value = "course") Integer gameCourse,
                                                @RequestParam(value = "period") String gamePeriod) {
         gameService.evaluateGame(gameSubjectAcronym, gameCourse, gamePeriod);
-        return ResponseEntity.ok("Game corresponding to subject with acronym '" + gameSubjectAcronym + "', course '" + gameCourse + "' and period '" + gamePeriod + "' successfully evaluated");
+        return ResponseEntity.ok("Game corresponding to subject with acronym '" + gameSubjectAcronym + "', course '" + gameCourse + "' and period '" + gamePeriod + "' successfully evaluated.");
     }
 
 }
