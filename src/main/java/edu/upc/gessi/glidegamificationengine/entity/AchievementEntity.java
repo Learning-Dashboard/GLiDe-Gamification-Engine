@@ -42,7 +42,7 @@ public class AchievementEntity {
     private List<AchievementAssignmentEntity> achievementAssignmentEntities;
 
     @OneToMany(mappedBy = "achievementEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<CompetitionEntity> competitionEntities;
+    private List<LeaderboardEntity> leaderboardEntities;
 
     public List<Map> getResults(GameKey gameId, PlayerType assessmentLevel, Date startDate, Date endDate) {
         Map<String, Integer> playerUnits = new HashMap<>();

@@ -12,7 +12,7 @@ import java.sql.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CompetitionResultDto {
+public class LeaderboardResultDto {
     private Integer position;
     private String playername;
     private String playerimage;

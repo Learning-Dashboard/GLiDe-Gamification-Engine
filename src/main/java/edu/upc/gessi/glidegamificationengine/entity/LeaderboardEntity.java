@@ -1,7 +1,6 @@
 package edu.upc.gessi.glidegamificationengine.entity;
 
 import edu.upc.gessi.glidegamificationengine.type.AnonymizationType;
-import edu.upc.gessi.glidegamificationengine.type.CompetitionCategoryType;
 import edu.upc.gessi.glidegamificationengine.type.ExtentType;
 import edu.upc.gessi.glidegamificationengine.type.PlayerType;
 import jakarta.persistence.*;
@@ -17,8 +16,8 @@ import java.sql.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "competition")
-public class CompetitionEntity {
+@Table(name = "leaderboard")
+public class LeaderboardEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,10 +25,6 @@ public class CompetitionEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
-
-    @Column(name = "category", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private CompetitionCategoryType category;
 
     @Column(name = "start_date", nullable = false)
     private Date startDate;
