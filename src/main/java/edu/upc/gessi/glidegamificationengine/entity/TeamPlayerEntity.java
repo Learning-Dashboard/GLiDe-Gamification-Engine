@@ -25,4 +25,8 @@ public class TeamPlayerEntity extends PlayerEntity {
     @OneToMany(mappedBy = "teamPlayerEntity", fetch = FetchType.LAZY)
     private List<IndividualPlayerEntity> individualPlayerEntities;
 
+    @Override
+    public void updateLevel() {
+        super.setLevel(projectEntity.getGameGroupEntity().getGameEntity().calculateLevel(super.getPoints()));
+    }
 }

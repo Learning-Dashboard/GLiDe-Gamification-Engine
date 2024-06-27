@@ -28,7 +28,7 @@ public class AchievementAssignmentEntity {
     @EmbeddedId
     private AchievementAssignmentKey id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @MapsId("ruleId")
     @JoinColumn(name = "rule_id", referencedColumnName = "id")
     private RuleEntity ruleEntity;
@@ -53,14 +53,14 @@ public class AchievementAssignmentEntity {
                                                                                         @JoinColumn(name = "achievement_assignment_achievement_id", referencedColumnName = "achievement_id")})
     private List<Float> conditionParameters;
 
-    @Column(name = "achievement_units")
+    @Column(name = "achievement_units", nullable = false)
     private Integer achievementUnits;
 
     @Column(name = "assessment_level", nullable = false)
     @Enumerated(EnumType.STRING)
     private PlayerType assessmentLevel;
 
-    @OneToMany(mappedBy = "achievementAssignmentEntity", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "achievementAssignmentEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<LoggedAchievementEntity> loggedAchievementEntities;
 
     @ManyToMany

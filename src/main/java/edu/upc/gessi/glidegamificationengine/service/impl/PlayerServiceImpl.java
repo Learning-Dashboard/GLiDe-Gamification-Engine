@@ -46,6 +46,15 @@ public class PlayerServiceImpl implements PlayerService {
                 .orElseThrow(() -> new ResourceNotFoundException("Player with playername '" + playerPlayername + "' not found."));
     }
 
+    @Transactional
+    protected void updatePlayersPointsAndLevels() {
+        List<PlayerEntity> playerEntities = playerRepository.findAll();
+        for (PlayerEntity playerEntity : playerEntities) {
+            playerEntity.updatePoints();
+            playerEntity.updateLevel();
+        }
+    }
+
 
     /* Methods callable from Controller Layer */
 

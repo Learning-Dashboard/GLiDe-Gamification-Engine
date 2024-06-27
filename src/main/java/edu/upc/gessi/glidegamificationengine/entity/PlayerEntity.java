@@ -37,6 +37,17 @@ public abstract class PlayerEntity {
     @OneToMany(mappedBy = "playerEntity", fetch = FetchType.LAZY)
     private List<LoggedAchievementEntity> loggedAchievementEntities;
 
+    public void updatePoints() {
+        int points = 0;
+        for (int i = 0; i < loggedAchievementEntities.size(); i++) {
+            if (loggedAchievementEntities.get(i).getAchievementAssignmentEntity().getAchievementEntity().getCategory().equals(AchievementCategoryType.Points))
+                points += loggedAchievementEntities.get(i).getAchievementAssignmentEntity().getAchievementUnits();
+        }
+        this.points = points;
+    }
+
+    public abstract void updateLevel();
+
     public void addLoggedAchievementEntity(LoggedAchievementEntity loggedAchievementEntity) {
         if (loggedAchievementEntities == null) {
             loggedAchievementEntities = new ArrayList<>();

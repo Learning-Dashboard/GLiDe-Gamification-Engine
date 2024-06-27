@@ -76,6 +76,33 @@ public class AchievementController {
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf(iconMimeType)).body(iconBytes);
     }
 
+    @Operation(summary = "Update achievement", description = "Update an achievement. The achievement is identified by its id. The achievement name cannot be blank and must not be already used. The achievement icon is optional. The achievement category name must be a valid achievement category type (Points, Badges or Resources). The achievement is returned as an AchievementDto object.", tags = { "achievements" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK: AchievementDto object.", content = @Content(schema = @Schema(implementation = AchievementDto.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST: The given achievement category name not a valid achievement category type (Only available: Points, Badges, Resources).", content = @Content),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND: Achievement with the given id not found.", content = @Content),
+            @ApiResponse(responseCode = "409", description = "CONFLICT: (1) Achievement name cannot be blank; (2) The given achievement name already used.", content = @Content)
+    })
+    @PutMapping(value="{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AchievementDto> updateAchievement(@PathVariable("id") Long achievementId,
+                                                            @RequestPart(value = "name") String achievementName,
+                                                            @RequestPart(value = "icon", required = false) MultipartFile achievementIcon,
+                                                            @RequestPart(value = "category") String achievementCategory) throws IOException {
+        AchievementDto updatedAchievementDto = achievementService.updateAchievement(achievementId, achievementName, achievementIcon, achievementCategory);
+        return ResponseEntity.ok(updatedAchievementDto);
+    }
+
+    @Operation(summary = "Delete achievement", description = "Delete an achievement. The achievement is identified by its id.", tags = { "achievements" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK: Success message.", content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND: Achievement with the given id not found.", content = @Content)
+    })
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> deleteAchievement(@PathVariable("id") Long achievementId) {
+        achievementService.deleteAchievement(achievementId);
+        return ResponseEntity.ok("Achievement with id '" + achievementId + "' successfully deleted.");
+    }
+
     @Operation(summary = "Get achievement categories", description = "Get all the achievement categories. The achievement categories are returned as a list of AchievementCategoryDto objects.", tags = { "achievements" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK: List of AchievementCategoryDto objects.", content = @Content(array = @ArraySchema(schema = @Schema(implementation = AchievementCategoryDto.class))))
@@ -108,12 +135,6 @@ public class AchievementController {
     public ResponseEntity<AchievementDto> updateAchievement(@PathVariable("id") Long achievementId, @RequestBody AchievementDto updatedAchievementDto) {
         AchievementDto achievementDto = achievementService.updateAchievement(achievementId, updatedAchievementDto);
         return ResponseEntity.ok(achievementDto);
-    }
-
-    @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteAchievement(@PathVariable("id") Long achievementId) {
-        achievementService.deleteAchievement(achievementId);
-        return ResponseEntity.ok("Achievement with id '" + achievementId + "' successfully deleted");
     }
     */
 

@@ -27,4 +27,8 @@ public class IndividualPlayerEntity extends PlayerEntity {
     @JoinColumn(name = "student_user_username", nullable = false)
     private StudentUserEntity studentUserEntity;
 
+    @Override
+    public void updateLevel() {
+        super.setLevel(teamPlayerEntity.getProjectEntity().getGameGroupEntity().getGameEntity().calculateLevel(super.getPoints()));
+    }
 }

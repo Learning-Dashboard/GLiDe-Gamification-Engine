@@ -25,6 +25,9 @@ public class AchievementServiceImpl implements AchievementService {
     @Autowired
     private AchievementRepository achievementRepository;
 
+    @Autowired
+    private PlayerServiceImpl playerService;
+
     /* Methods callable from Service Layer */
 
 
@@ -66,6 +69,47 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
     @Override
+    public AchievementDto updateAchievement(Long achievementId, String achievementName, MultipartFile achievementIcon, String achievementCategory) throws IOException {
+        AchievementEntity achievementEntity = achievementRepository.findById(achievementId)
+                .orElseThrow(() -> new ResourceNotFoundException("Achievement with id '" + achievementId + "' not found."));
+        if (achievementName.isBlank())
+            throw new ConstraintViolationException("Achievement name cannot be blank, please introduce a name.");
+        achievementEntity.setName(achievementName);
+        if (achievementIcon != null) achievementEntity.setIcon(Base64.getEncoder().encodeToString(achievementIcon.getBytes()));
+        else achievementEntity.setIcon(null);
+        AchievementCategoryType achievementOldCategory = achievementEntity.getCategory();
+        achievementEntity.setCategory(AchievementCategoryType.fromString(achievementCategory));
+        AchievementCategoryType achievementNewCategory = achievementEntity.getCategory();
+
+        AchievementEntity updatedAchievementEntity;
+        try{
+            updatedAchievementEntity = achievementRepository.save(achievementEntity);
+        }
+        catch (Exception exception){
+            if (exception.getCause() instanceof org.hibernate.exception.ConstraintViolationException)
+                throw new ConstraintViolationException("Achievement name '" + achievementEntity.getName() + "' already used, please pick a different name.");
+            else throw exception;
+        }
+
+        if (achievementNewCategory.equals(AchievementCategoryType.Points) && !achievementOldCategory.equals(AchievementCategoryType.Points))
+            playerService.updatePlayersPointsAndLevels();
+
+        return AchievementMapper.mapToAchievementDto(updatedAchievementEntity);
+    }
+
+    @Override
+    public void deleteAchievement(Long achievementId) {
+        AchievementEntity achievementEntity = achievementRepository.findById(achievementId)
+                .orElseThrow(() -> new ResourceNotFoundException("Achievement with id '" + achievementId + "' not found."));
+        Boolean achievementCategoryIsPoints = achievementEntity.getCategory().equals(AchievementCategoryType.Points);
+
+        achievementRepository.deleteById(achievementId);
+
+        if (achievementCategoryIsPoints)
+            playerService.updatePlayersPointsAndLevels();
+    }
+
+    @Override
     public List<AchievementCategoryDto> getAchievementCategories() {
         List<AchievementCategoryDto> achievementCategoryDtos = new ArrayList<>();
         for (AchievementCategoryType value : AchievementCategoryType.values()) {
@@ -79,6 +123,8 @@ public class AchievementServiceImpl implements AchievementService {
         AchievementCategoryType achievementCategory = AchievementCategoryType.fromString(achievementCategoryName);
         return new AchievementCategoryDto(achievementCategory, achievementCategory.getDescription(), achievementCategory.isNumerical());
     }
+
+
 
     /*
     @Override
@@ -116,13 +162,6 @@ public class AchievementServiceImpl implements AchievementService {
         achievementEntity.setIcon(updatedAchievementDto.getIcon());
         AchievementEntity updatedAchievementEntity = achievementRepository.save(achievementEntity);
         return AchievementMapper.mapToAchievementDto(updatedAchievementEntity);
-    }
-
-    @Override
-    public void deleteAchievement(Long achievementId) {
-        achievementRepository.findById(achievementId)
-                .orElseThrow(() -> new ResourceNotFoundException("Achievement with id '" + achievementId + "' not found"));
-        achievementRepository.deleteById(achievementId);
     }
      */
 

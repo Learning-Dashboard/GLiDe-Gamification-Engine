@@ -15,6 +15,10 @@ public interface AchievementService {
 
     AchievementDto getAchievement(Long achievementId);
 
+    AchievementDto updateAchievement(Long achievementId, String achievementName, MultipartFile achievementIcon, String achievementCategory) throws IOException;
+
+    void deleteAchievement(Long achievementId);
+
     List<AchievementCategoryDto> getAchievementCategories();
 
     AchievementCategoryDto getAchievementCategory(String achievementCategoryName);
@@ -23,8 +27,6 @@ public interface AchievementService {
     AchievementDto createAchievement(AchievementDto achievementDto);
 
     AchievementDto updateAchievement(Long achievementId, AchievementDto updatedAchievementDto);
-
-    void deleteAchievement(Long achievementId);
     */
 
 }
