@@ -1,7 +1,9 @@
 package edu.upc.gessi.glidegamificationengine.controller;
 
+import edu.upc.gessi.glidegamificationengine.dto.GameDto;
 import edu.upc.gessi.glidegamificationengine.service.GameService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,12 +16,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/games")
 public class GameController {
 
     @Autowired
     private GameService gameService;
+
+    @Operation(summary = "Get games", description = "Get all the games optionally filtered by a specific subject acronym, course and/or period, being the period name a valid period type (Quadrimester1 or Quadrimester2). The games are returned as a list of GameDto objects.", tags = { "games" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK: List of GameDto objects.", content = @Content(array = @ArraySchema(schema = @Schema(implementation = GameDto.class)))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST: The given period name not a valid period type (Only available: Quadrimester1, Quadrimester2).", content = @Content)
+    })
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<GameDto>> getGames(@RequestParam(value = "subjectAcronym", required = false) String gameSubjectAcronym,
+                                                  @RequestParam(value = "course", required = false) Integer gameCourse,
+                                                  @RequestParam(value = "period", required = false) String gamePeriod) {
+        List<GameDto> gameDtos = gameService.getGames(gameSubjectAcronym, gameCourse, gamePeriod);
+        return ResponseEntity.ok(gameDtos);
+    }
 
     @Operation(summary = "Evaluate game", description = "Evaluate the rules of a game to assign achievements to players when their actions meet some conditions. The game is identified by the subject acronym, course and period. The period name must be a valid period type (Quadrimester1 or Quadrimester2).", tags = { "games" })
     @ApiResponses(value = {

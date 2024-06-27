@@ -1,9 +1,12 @@
 package edu.upc.gessi.glidegamificationengine.service.impl;
 
+import edu.upc.gessi.glidegamificationengine.dto.GameDto;
 import edu.upc.gessi.glidegamificationengine.entity.*;
 import edu.upc.gessi.glidegamificationengine.entity.key.GameKey;
 import edu.upc.gessi.glidegamificationengine.exception.ConstraintViolationException;
 import edu.upc.gessi.glidegamificationengine.exception.ResourceNotFoundException;
+import edu.upc.gessi.glidegamificationengine.mapper.GameMapper;
+import edu.upc.gessi.glidegamificationengine.mapper.LeaderboardMapper;
 import edu.upc.gessi.glidegamificationengine.repository.GameRepository;
 import edu.upc.gessi.glidegamificationengine.service.GameService;
 import edu.upc.gessi.glidegamificationengine.type.AchievementCategoryType;
@@ -18,6 +21,8 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class GameServiceImpl implements GameService {
@@ -77,6 +82,56 @@ public class GameServiceImpl implements GameService {
 
 
     /* Methods callable from Controller Layer */
+
+    @Override
+    public List<GameDto> getGames(String gameSubjectAcronym, Integer gameCourse, String gamePeriod) {
+        List<GameEntity> gameEntities = new ArrayList<>();
+
+        if (gameSubjectAcronym != null) {
+            if (gameCourse != null) {
+                if (gamePeriod != null) {
+                    GameKey gameKey = new GameKey();
+                    gameKey.setSubjectAcronym(gameSubjectAcronym);
+                    gameKey.setCourse(gameCourse);
+                    gameKey.setPeriod(PeriodType.fromString(gamePeriod));
+                    Optional<GameEntity> gameEntity = gameRepository.findById(gameKey);
+                    if (gameEntity.isPresent()) gameEntities.add(gameEntity.get());
+                }
+                else {
+                    gameEntities = gameRepository.findByIdSubjectAcronymAndIdCourse(gameSubjectAcronym, gameCourse);
+                }
+            }
+            else {
+                if (gamePeriod != null) {
+                    gameEntities = gameRepository.findByIdSubjectAcronymAndIdPeriod(gameSubjectAcronym, PeriodType.fromString(gamePeriod));
+                }
+                else {
+                    gameEntities = gameRepository.findByIdSubjectAcronym(gameSubjectAcronym);
+                }
+            }
+        }
+        else {
+            if (gameCourse != null) {
+                if (gamePeriod != null) {
+                    gameEntities = gameRepository.findByIdCourseAndIdPeriod(gameCourse, PeriodType.fromString(gamePeriod));
+                }
+                else {
+                    gameEntities = gameRepository.findByIdCourse(gameCourse);
+                }
+            }
+            else {
+                if (gamePeriod != null) {
+                    gameEntities = gameRepository.findByIdPeriod(PeriodType.fromString(gamePeriod));
+                }
+                else {
+                    gameEntities = gameRepository.findAll();
+                }
+            }
+        }
+
+        return gameEntities.stream().map((gameEntity -> GameMapper.mapToGameDto(gameEntity)))
+                .collect(Collectors.toList());
+    }
 
     @Override
     @Transactional
