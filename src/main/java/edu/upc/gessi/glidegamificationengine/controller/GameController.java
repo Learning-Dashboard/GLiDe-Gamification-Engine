@@ -21,7 +21,7 @@ public class GameController {
     @Autowired
     private GameService gameService;
 
-    @Operation(summary = "Evaluate game", description = "Evaluate the rules of a game to assign achievements to players when their actions meet some conditions. The game is identified by the subject acronym, course and period.", tags = { "games" })
+    @Operation(summary = "Evaluate game", description = "Evaluate the rules of a game to assign achievements to players when their actions meet some conditions. The game is identified by the subject acronym, course and period. The period name must be a valid period type (Quadrimester1 or Quadrimester2).", tags = { "games" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK: Success message.", content = @Content(schema = @Schema(implementation = String.class))),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST: The given period name not a valid period type (Only available: Quadrimester1, Quadrimester2).", content = @Content),
