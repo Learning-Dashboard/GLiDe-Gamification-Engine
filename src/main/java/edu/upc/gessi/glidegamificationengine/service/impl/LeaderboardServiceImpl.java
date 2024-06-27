@@ -1,13 +1,19 @@
 package edu.upc.gessi.glidegamificationengine.service.impl;
 
+import edu.upc.gessi.glidegamificationengine.dto.LeaderboardDto;
 import edu.upc.gessi.glidegamificationengine.dto.LeaderboardResultDto;
 import edu.upc.gessi.glidegamificationengine.entity.LeaderboardEntity;
 import edu.upc.gessi.glidegamificationengine.entity.GameGroupEntity;
 import edu.upc.gessi.glidegamificationengine.entity.key.GameKey;
+import edu.upc.gessi.glidegamificationengine.exception.MissingInformationException;
 import edu.upc.gessi.glidegamificationengine.exception.ResourceNotFoundException;
+import edu.upc.gessi.glidegamificationengine.exception.TypeNotCorrectException;
+import edu.upc.gessi.glidegamificationengine.mapper.AchievementMapper;
+import edu.upc.gessi.glidegamificationengine.mapper.LeaderboardMapper;
 import edu.upc.gessi.glidegamificationengine.repository.LeaderboardRepository;
 import edu.upc.gessi.glidegamificationengine.service.LeaderboardService;
 import edu.upc.gessi.glidegamificationengine.type.ExtentType;
+import edu.upc.gessi.glidegamificationengine.type.PeriodType;
 import edu.upc.gessi.glidegamificationengine.type.PlayerType;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +21,17 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class LeaderboardServiceImpl implements LeaderboardService {
 
     @Autowired
     private LeaderboardRepository leaderboardRepository;
+
+    @Autowired
+    private GameServiceImpl gameService;
 
     /* Methods callable from Service Layer */
 
@@ -185,6 +196,39 @@ public class LeaderboardServiceImpl implements LeaderboardService {
 
 
     /* Methods callable from Controller Layer */
+
+    @Override
+    public List<LeaderboardDto> getLeaderboards(String gameSubjectAcronym, Integer gameCourse, String gamePeriod) {
+        List<LeaderboardEntity> leaderboardEntities;
+
+        if (gameSubjectAcronym != null || gameCourse != null || gamePeriod != null) {
+            if (gameSubjectAcronym == null || gameCourse == null || gamePeriod == null) {
+                List<String> missingInformation = new ArrayList<>();
+                if (gameSubjectAcronym == null) missingInformation.add("subject acronym");
+                if (gameCourse == null) missingInformation.add("course");
+                if (gamePeriod == null) missingInformation.add("period");
+                throw new MissingInformationException("Game not fully identified (Missing: " +
+                        missingInformation.stream().map(value -> "'" + value + "'").collect(Collectors.joining(", ")) + ").");
+            }
+            PeriodType gamePeriodType = PeriodType.fromString(gamePeriod);
+            GameKey gameKey = new GameKey();
+            gameKey.setSubjectAcronym(gameSubjectAcronym);
+            gameKey.setCourse(gameCourse);
+            gameKey.setPeriod(gamePeriodType);
+            leaderboardEntities = leaderboardRepository.findByGameEntity(gameService.getGameEntityByKey(gameKey));
+        }
+        else {
+            leaderboardEntities = leaderboardRepository.findAll();
+        }
+
+        return leaderboardEntities.stream().map((leaderboardEntity -> LeaderboardMapper.mapToLeaderboardDto(leaderboardEntity)))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public LeaderboardDto getLeaderboard(Long leaderboardId) {
+        return LeaderboardMapper.mapToLeaderboardDto(getLeaderboardEntityById(leaderboardId));
+    }
 
     @Override
     @Transactional
