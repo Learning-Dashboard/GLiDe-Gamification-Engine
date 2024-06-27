@@ -1,6 +1,9 @@
 package edu.upc.gessi.glidegamificationengine.service.impl;
 
+import edu.upc.gessi.glidegamificationengine.dto.EvaluableActionDto;
 import edu.upc.gessi.glidegamificationengine.entity.EvaluableActionEntity;
+import edu.upc.gessi.glidegamificationengine.exception.ResourceNotFoundException;
+import edu.upc.gessi.glidegamificationengine.mapper.EvaluableActionMapper;
 import edu.upc.gessi.glidegamificationengine.repository.EvaluableActionRepository;
 import edu.upc.gessi.glidegamificationengine.service.EvaluableActionService;
 import edu.upc.gessi.glidegamificationengine.type.ActionCategoryType;
@@ -8,6 +11,9 @@ import edu.upc.gessi.glidegamificationengine.type.PlayerType;
 import edu.upc.gessi.glidegamificationengine.type.SourceDataToolType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EvaluableActionServiceImpl implements EvaluableActionService {
@@ -82,6 +88,20 @@ public class EvaluableActionServiceImpl implements EvaluableActionService {
         evaluableActionRepository.save(backlogmanagement);
         evaluableActionRepository.save(informationcompleteness);
         evaluableActionRepository.save(repositorycontribution);
+    }
+
+    @Override
+    public List<EvaluableActionDto> getEvaluableActions() {
+        List<EvaluableActionEntity> evaluableActionEntities = evaluableActionRepository.findAll();
+        return evaluableActionEntities.stream().map((evaluableActionEntity -> EvaluableActionMapper.mapToEvaluableActionDto(evaluableActionEntity)))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public EvaluableActionDto getEvaluableAction(String evaluableActionId) {
+        EvaluableActionEntity evaluableActionEntity = evaluableActionRepository.findById(evaluableActionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Evaluable action with id '" + evaluableActionId + "' not found."));
+        return EvaluableActionMapper.mapToEvaluableActionDto(evaluableActionEntity);
     }
 
 }
