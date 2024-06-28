@@ -30,6 +30,11 @@ public class AchievementServiceImpl implements AchievementService {
 
     /* Methods callable from Service Layer */
 
+    protected AchievementEntity getAchievementEntityById(Long achievementId) {
+        return achievementRepository.findById(achievementId)
+                .orElseThrow(() -> new ResourceNotFoundException("Achievement with id '" + achievementId + "' not found."));
+    }
+
 
     /* Methods callable from Controller Layer */
 
@@ -63,15 +68,13 @@ public class AchievementServiceImpl implements AchievementService {
 
     @Override
     public AchievementDto getAchievement(Long achievementId) {
-        AchievementEntity achievementEntity = achievementRepository.findById(achievementId)
-                .orElseThrow(() -> new ResourceNotFoundException("Achievement with id '" + achievementId + "' not found."));
+        AchievementEntity achievementEntity = getAchievementEntityById(achievementId);
         return AchievementMapper.mapToAchievementDto(achievementEntity);
     }
 
     @Override
     public AchievementDto updateAchievement(Long achievementId, String achievementName, MultipartFile achievementIcon, String achievementCategory) throws IOException {
-        AchievementEntity achievementEntity = achievementRepository.findById(achievementId)
-                .orElseThrow(() -> new ResourceNotFoundException("Achievement with id '" + achievementId + "' not found."));
+        AchievementEntity achievementEntity = getAchievementEntityById(achievementId);
         if (achievementName.isBlank())
             throw new ConstraintViolationException("Achievement name cannot be blank, please introduce a name.");
         achievementEntity.setName(achievementName);
@@ -99,8 +102,7 @@ public class AchievementServiceImpl implements AchievementService {
 
     @Override
     public void deleteAchievement(Long achievementId) {
-        AchievementEntity achievementEntity = achievementRepository.findById(achievementId)
-                .orElseThrow(() -> new ResourceNotFoundException("Achievement with id '" + achievementId + "' not found."));
+        AchievementEntity achievementEntity = getAchievementEntityById(achievementId);
         Boolean achievementCategoryIsPoints = achievementEntity.getCategory().equals(AchievementCategoryType.Points);
 
         achievementRepository.deleteById(achievementId);

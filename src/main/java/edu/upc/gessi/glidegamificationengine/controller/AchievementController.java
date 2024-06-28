@@ -97,7 +97,7 @@ public class AchievementController {
             @ApiResponse(responseCode = "200", description = "OK: Success message.", content = @Content(schema = @Schema(implementation = String.class))),
             @ApiResponse(responseCode = "404", description = "NOT FOUND: Achievement with the given id not found.", content = @Content)
     })
-    @DeleteMapping("{id}")
+    @DeleteMapping(value="{id}", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> deleteAchievement(@PathVariable("id") Long achievementId) {
         achievementService.deleteAchievement(achievementId);
         return ResponseEntity.ok("Achievement with id '" + achievementId + "' successfully deleted.");

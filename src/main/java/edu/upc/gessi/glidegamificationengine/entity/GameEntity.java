@@ -84,4 +84,11 @@ public class GameEntity {
         }
     }
 
+    public Boolean hasAchievement(AchievementEntity achievementEntity) {
+        for (RuleEntity ruleEntity : ruleEntities) {
+            if (ruleEntity.getAchievementAssignmentEntity().getAchievementEntity().equals(achievementEntity)) return true;
+        }
+        return false;
+    }
+
 }

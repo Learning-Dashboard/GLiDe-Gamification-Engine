@@ -2,16 +2,18 @@ package edu.upc.gessi.glidegamificationengine.service.impl;
 
 import edu.upc.gessi.glidegamificationengine.dto.LeaderboardDto;
 import edu.upc.gessi.glidegamificationengine.dto.LeaderboardResultDto;
+import edu.upc.gessi.glidegamificationengine.entity.AchievementEntity;
+import edu.upc.gessi.glidegamificationengine.entity.GameEntity;
 import edu.upc.gessi.glidegamificationengine.entity.LeaderboardEntity;
 import edu.upc.gessi.glidegamificationengine.entity.GameGroupEntity;
 import edu.upc.gessi.glidegamificationengine.entity.key.GameKey;
+import edu.upc.gessi.glidegamificationengine.exception.ConstraintViolationException;
 import edu.upc.gessi.glidegamificationengine.exception.MissingInformationException;
 import edu.upc.gessi.glidegamificationengine.exception.ResourceNotFoundException;
-import edu.upc.gessi.glidegamificationengine.exception.TypeNotCorrectException;
-import edu.upc.gessi.glidegamificationengine.mapper.AchievementMapper;
 import edu.upc.gessi.glidegamificationengine.mapper.LeaderboardMapper;
 import edu.upc.gessi.glidegamificationengine.repository.LeaderboardRepository;
 import edu.upc.gessi.glidegamificationengine.service.LeaderboardService;
+import edu.upc.gessi.glidegamificationengine.type.AnonymizationType;
 import edu.upc.gessi.glidegamificationengine.type.ExtentType;
 import edu.upc.gessi.glidegamificationengine.type.PeriodType;
 import edu.upc.gessi.glidegamificationengine.type.PlayerType;
@@ -22,7 +24,6 @@ import org.springframework.stereotype.Service;
 import java.sql.Date;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class LeaderboardServiceImpl implements LeaderboardService {
@@ -32,6 +33,9 @@ public class LeaderboardServiceImpl implements LeaderboardService {
 
     @Autowired
     private GameServiceImpl gameService;
+
+    @Autowired
+    private AchievementServiceImpl achievementService;
 
     /* Methods callable from Service Layer */
 
@@ -196,6 +200,42 @@ public class LeaderboardServiceImpl implements LeaderboardService {
 
 
     /* Methods callable from Controller Layer */
+
+    @Override
+    public LeaderboardDto createLeaderboard(String leaderboardName, Date leaderboardStartDate, Date leaderboardEndDate, String leaderboardAssessmentLevel, String leaderboardExtent, String leaderboardAnonymization, Boolean leaderboardStudentVisible, Long achievementId, String gameSubjectAcronym, Integer gameCourse, String gamePeriod) {
+        PlayerType leaderboardAssessmentLevelType = PlayerType.fromString(leaderboardAssessmentLevel);
+        ExtentType leaderboardExtentType = ExtentType.fromString(leaderboardExtent);
+        AnonymizationType leaderboardAnonymizationType = AnonymizationType.fromString(leaderboardAnonymization);
+        PeriodType gamePeriodType = PeriodType.fromString(gamePeriod);
+
+        AchievementEntity achievementEntity = achievementService.getAchievementEntityById(achievementId);
+        GameKey gameKey = new GameKey();
+        gameKey.setSubjectAcronym(gameSubjectAcronym);
+        gameKey.setCourse(gameCourse);
+        gameKey.setPeriod(gamePeriodType);
+        GameEntity gameEntity = gameService.getGameEntityByKey(gameKey);
+
+        if (leaderboardName.isBlank())
+            throw new ConstraintViolationException("Leaderboard name cannot be blank, please introduce a name.");
+        if (leaderboardStartDate.after(leaderboardEndDate))
+            throw new ConstraintViolationException("The leaderboard start date cannot be posterior to the leaderboard end date, please introduce different dates.");
+        if (!gameEntity.hasAchievement(achievementEntity))
+            throw new ConstraintViolationException("The game assigned to the leaderboard must have at least one rule with the same achievement assigned to the leaderboard.");
+
+        LeaderboardEntity leaderboardEntity = new LeaderboardEntity();
+        leaderboardEntity.setName(leaderboardName);
+        leaderboardEntity.setStartDate(leaderboardStartDate);
+        leaderboardEntity.setEndDate(leaderboardEndDate);
+        leaderboardEntity.setAssessmentLevel(leaderboardAssessmentLevelType);
+        leaderboardEntity.setExtent(leaderboardExtentType);
+        leaderboardEntity.setAnonymization(leaderboardAnonymizationType);
+        leaderboardEntity.setStudentVisible(leaderboardStudentVisible);
+        leaderboardEntity.setAchievementEntity(achievementEntity);
+        achievementEntity.addLeaderboardEntity(leaderboardEntity);
+        leaderboardEntity.setGameEntity(gameEntity);
+        LeaderboardEntity savedLeaderboardEntity = leaderboardRepository.save(leaderboardEntity);
+        return LeaderboardMapper.mapToLeaderboardDto(savedLeaderboardEntity);
+    }
 
     @Override
     public List<LeaderboardDto> getLeaderboards(String gameSubjectAcronym, Integer gameCourse, String gamePeriod) {

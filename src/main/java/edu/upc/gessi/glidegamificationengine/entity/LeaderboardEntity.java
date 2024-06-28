@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Check;
 
 import java.sql.Date;
 
@@ -17,6 +18,7 @@ import java.sql.Date;
 @AllArgsConstructor
 @Entity
 @Table(name = "leaderboard")
+@Check(constraints = "start_date <= end_date")
 public class LeaderboardEntity {
 
     @Id
