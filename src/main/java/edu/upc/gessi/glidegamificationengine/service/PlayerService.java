@@ -17,6 +17,6 @@ public interface PlayerService {
 
     List<PlayerLoggedAchievementDto> getPlayerLoggedAchievements(String playerPlayername, Boolean loggedAchievementViewed, String achievementCategory);
 
-    PlayerLoggedAchievementDto setPlayerLoggedAchievementViewed(String playerPlayername, Long loggedAchievementId);
+    PlayerLoggedAchievementDto setPlayerLoggedAchievementViewed(String playerPlayername, Long loggedAchievementId, Boolean viewed);
 
 }

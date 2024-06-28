@@ -75,14 +75,14 @@ public class PlayerController {
         return ResponseEntity.ok(playerLoggedAchievementDtos);
     }
 
-    @Operation(summary = "Set player logged achievement viewed", description = "Set a player logged achievement as viewed or unviewed depending on the current boolean value. The player is identified by its playername and the logged achievement is identified by its id. The player logged achievement is returned as a PlayerLoggedAchievementDto object.", tags = { "players" })
+    @Operation(summary = "Set player logged achievement viewed", description = "Set a player logged achievement as viewed or unviewed depending on the boolean value passed. The player is identified by its playername and the logged achievement is identified by its id. The player logged achievement is returned as a PlayerLoggedAchievementDto object.", tags = { "players" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK: PlayerLoggedAchievementDto object.", content = @Content(schema = @Schema(implementation = PlayerLoggedAchievementDto.class))),
             @ApiResponse(responseCode = "404", description = "NOT FOUND: Player with the given playername and/or logged achievement with the given id not found.", content = @Content)
     })
-    @PatchMapping(value = "/{playername}/loggedAchievements/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PlayerLoggedAchievementDto> setPlayerLoggedAchievementViewed(@PathVariable("playername") String playerPlayername, @PathVariable("id") Long loggedAchievementId) {
-        PlayerLoggedAchievementDto playerLoggedAchievementDto = playerService.setPlayerLoggedAchievementViewed(playerPlayername, loggedAchievementId);
+    @PatchMapping(value = "/{playername}/loggedAchievements/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PlayerLoggedAchievementDto> setPlayerLoggedAchievementViewed(@PathVariable("playername") String playerPlayername, @PathVariable("id") Long loggedAchievementId, @RequestPart(value = "viewed") Boolean viewed) {
+        PlayerLoggedAchievementDto playerLoggedAchievementDto = playerService.setPlayerLoggedAchievementViewed(playerPlayername, loggedAchievementId, viewed);
         return ResponseEntity.ok(playerLoggedAchievementDto);
     }
 }

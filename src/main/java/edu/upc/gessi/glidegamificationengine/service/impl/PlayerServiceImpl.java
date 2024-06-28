@@ -181,10 +181,10 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     @Transactional
-    public PlayerLoggedAchievementDto setPlayerLoggedAchievementViewed(String playerPlayername, Long loggedAchievementId) {
+    public PlayerLoggedAchievementDto setPlayerLoggedAchievementViewed(String playerPlayername, Long loggedAchievementId, Boolean viewed) {
         PlayerEntity playerEntity = getPlayerEntityByPlayername(playerPlayername);
         LoggedAchievementEntity loggedAchievementEntity = loggedAchievementService.getLoggedAchievementEntityById(loggedAchievementId);
-        loggedAchievementEntity.setViewed(!loggedAchievementEntity.getViewed());
+        loggedAchievementEntity.setViewed(viewed);
         return PlayerMapper.mapToPlayerLoggedAchievementDto(loggedAchievementEntity);
     }
 
