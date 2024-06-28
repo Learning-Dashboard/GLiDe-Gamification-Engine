@@ -76,7 +76,7 @@ public class AchievementController {
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf(iconMimeType)).body(iconBytes);
     }
 
-    @Operation(summary = "Update achievement", description = "Update an achievement. The achievement is identified by its id. The achievement name cannot be blank and must not be already used. The achievement icon is optional. The achievement category name must be a valid achievement category type (Points, Badges or Resources). The achievement is returned as an AchievementDto object.", tags = { "achievements" })
+    @Operation(summary = "Update achievement", description = "Update an achievement, recalculating the points and levels from all players when the updated achievement category type involved is Points. The achievement is identified by its id. The achievement name cannot be blank and must not be already used. The achievement icon is optional. The achievement category name must be a valid achievement category type (Points, Badges or Resources). The achievement is returned as an AchievementDto object.", tags = { "achievements" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK: AchievementDto object.", content = @Content(schema = @Schema(implementation = AchievementDto.class))),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST: The given achievement category name not a valid achievement category type (Only available: Points, Badges, Resources).", content = @Content),
@@ -92,7 +92,7 @@ public class AchievementController {
         return ResponseEntity.ok(updatedAchievementDto);
     }
 
-    @Operation(summary = "Delete achievement", description = "Delete an achievement. The achievement is identified by its id.", tags = { "achievements" })
+    @Operation(summary = "Delete achievement", description = "Delete an achievement and all the associated leaderboards, rules, achievement assignments and logged achievements. The achievement is identified by its id.", tags = { "achievements" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK: Success message.", content = @Content(schema = @Schema(implementation = String.class))),
             @ApiResponse(responseCode = "404", description = "NOT FOUND: Achievement with the given id not found.", content = @Content)
@@ -123,19 +123,5 @@ public class AchievementController {
         AchievementCategoryDto achievementCategoryDto = achievementService.getAchievementCategory(achievementCategoryName);
         return ResponseEntity.ok(achievementCategoryDto);
     }
-
-    /*
-    @PostMapping
-    public ResponseEntity<AchievementDto> createAchievement(@RequestBody AchievementDto achievementDto) {
-        AchievementDto savedAchievementDto = achievementService.createAchievement(achievementDto);
-        return new ResponseEntity<>(savedAchievementDto, HttpStatus.CREATED);
-    }
-
-    @PutMapping("{id}")
-    public ResponseEntity<AchievementDto> updateAchievement(@PathVariable("id") Long achievementId, @RequestBody AchievementDto updatedAchievementDto) {
-        AchievementDto achievementDto = achievementService.updateAchievement(achievementId, updatedAchievementDto);
-        return ResponseEntity.ok(achievementDto);
-    }
-    */
 
 }

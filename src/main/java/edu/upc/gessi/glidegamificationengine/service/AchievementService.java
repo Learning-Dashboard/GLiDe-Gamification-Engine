@@ -23,10 +23,4 @@ public interface AchievementService {
 
     AchievementCategoryDto getAchievementCategory(String achievementCategoryName);
 
-    /*
-    AchievementDto createAchievement(AchievementDto achievementDto);
-
-    AchievementDto updateAchievement(Long achievementId, AchievementDto updatedAchievementDto);
-    */
-
 }

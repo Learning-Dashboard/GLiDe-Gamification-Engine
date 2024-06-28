@@ -126,45 +126,4 @@ public class AchievementServiceImpl implements AchievementService {
         return new AchievementCategoryDto(achievementCategory, achievementCategory.getDescription(), achievementCategory.isNumerical());
     }
 
-
-
-    /*
-    @Override
-    public AchievementDto createAchievement(AchievementDto achievementDto) {
-        AchievementEntity achievementEntity;
-        try{
-            achievementEntity = AchievementMapper.mapToAchievementEntity(achievementDto);
-        }
-        catch(Exception e){
-            throw new TypeNotCorrectException("Achievement category name '" + achievementDto.getAchievementCategoryName() + "' not a valid achievement category type (Only available: " +
-                    Stream.of(AchievementCategoryType.values()).map(achievementCategoryType -> "'" + achievementCategoryType.toString() + "'").collect(Collectors.joining(", ")) + ")");
-        }
-
-        achievementEntity.setId(null);
-        achievementEntity.setAchievementCategoryEntity(AchievementCategoryMapper.mapToAchievementCategoryEntity(achievementCategoryService.getAchievementCategoryByName(achievementEntity.getAchievementCategoryEntity().getName().toString())));
-
-        AchievementEntity savedAchievementEntity = new AchievementEntity();
-        try{
-            savedAchievementEntity = achievementRepository.save(achievementEntity);
-        }
-        catch (Exception e){
-            if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException)
-                throw new ConstraintViolationException("Name '" + achievementEntity.getName() + "' already used, please pick a different name");
-            else if (e.getCause() instanceof PropertyValueException)
-                throw new ConstraintViolationException("Name cannot be null, please introduce a name");
-        }
-        return AchievementMapper.mapToAchievementDto(savedAchievementEntity);
-    }
-
-    @Override
-    public AchievementDto updateAchievement(Long achievementId, AchievementDto updatedAchievementDto) {
-        AchievementEntity achievementEntity = achievementRepository.findById(achievementId)
-                .orElseThrow(() -> new ResourceNotFoundException("Achievement with id '" + achievementId + "' not found"));
-        achievementEntity.setName(updatedAchievementDto.getName());
-        achievementEntity.setIcon(updatedAchievementDto.getIcon());
-        AchievementEntity updatedAchievementEntity = achievementRepository.save(achievementEntity);
-        return AchievementMapper.mapToAchievementDto(updatedAchievementEntity);
-    }
-     */
-
 }
