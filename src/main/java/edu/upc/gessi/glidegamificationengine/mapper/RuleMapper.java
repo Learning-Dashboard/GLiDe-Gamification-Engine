@@ -1,7 +1,7 @@
 package edu.upc.gessi.glidegamificationengine.mapper;
 
-import edu.upc.gessi.glidegamificationengine.dto.DateRuleDto;
-import edu.upc.gessi.glidegamificationengine.dto.SimpleRuleDto;
+import edu.upc.gessi.glidegamificationengine.dto.DateRuleDTO;
+import edu.upc.gessi.glidegamificationengine.dto.SimpleRuleDTO;
 import edu.upc.gessi.glidegamificationengine.entity.DateRuleEntity;
 import edu.upc.gessi.glidegamificationengine.entity.SimpleRuleEntity;
 import org.modelmapper.ModelMapper;
@@ -9,9 +9,9 @@ import org.modelmapper.PropertyMap;
 
 public class RuleMapper {
 
-    public static SimpleRuleDto mapToSimpleRuleDto(SimpleRuleEntity simpleRuleEntity) {
+    public static SimpleRuleDTO mapToSimpleRuleDto(SimpleRuleEntity simpleRuleEntity) {
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.addMappings(new PropertyMap<SimpleRuleEntity, SimpleRuleDto>() {
+        modelMapper.addMappings(new PropertyMap<SimpleRuleEntity, SimpleRuleDTO>() {
             @Override
             protected void configure() {
                 using(ctx -> ((SimpleRuleEntity) ctx.getSource()).getGameEntity().getId().getSubjectAcronym())
@@ -26,12 +26,12 @@ public class RuleMapper {
                         .map(source, destination.getAchievementId());
             }
         });
-        return modelMapper.map(simpleRuleEntity, SimpleRuleDto.class);
+        return modelMapper.map(simpleRuleEntity, SimpleRuleDTO.class);
     }
 
-    public static DateRuleDto mapToDateRuleDto(DateRuleEntity dateRuleEntity) {
+    public static DateRuleDTO mapToDateRuleDto(DateRuleEntity dateRuleEntity) {
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.addMappings(new PropertyMap<DateRuleEntity, DateRuleDto>() {
+        modelMapper.addMappings(new PropertyMap<DateRuleEntity, DateRuleDTO>() {
             @Override
             protected void configure() {
                 using(ctx -> ((DateRuleEntity) ctx.getSource()).getGameEntity().getId().getSubjectAcronym())
@@ -46,7 +46,7 @@ public class RuleMapper {
                         .map(source, destination.getAchievementId());
             }
         });
-        return modelMapper.map(dateRuleEntity, DateRuleDto.class);
+        return modelMapper.map(dateRuleEntity, DateRuleDTO.class);
     }
 
 }

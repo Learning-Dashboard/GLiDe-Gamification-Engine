@@ -1,6 +1,6 @@
 package edu.upc.gessi.glidegamificationengine.dto.wrapper;
 
-import edu.upc.gessi.glidegamificationengine.dto.LeaderboardResultDto;
+import edu.upc.gessi.glidegamificationengine.dto.LeaderboardResultDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LeaderboardResultDtoListEntry {
+public class LeaderboardResultDTOListEntry {
     private String leaderboardExtentIdentifier;
-    private List<LeaderboardResultDto> leaderboardResults;
+    private List<LeaderboardResultDTO> leaderboardResults;
 }

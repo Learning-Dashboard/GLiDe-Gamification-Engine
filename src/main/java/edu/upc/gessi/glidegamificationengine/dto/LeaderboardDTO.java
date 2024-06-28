@@ -15,7 +15,7 @@ import java.sql.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LeaderboardDto {
+public class LeaderboardDTO {
     private Long id;
     private String name;
 

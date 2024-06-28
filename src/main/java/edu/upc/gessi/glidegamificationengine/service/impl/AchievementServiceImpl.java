@@ -1,7 +1,7 @@
 package edu.upc.gessi.glidegamificationengine.service.impl;
 
-import edu.upc.gessi.glidegamificationengine.dto.AchievementCategoryDto;
-import edu.upc.gessi.glidegamificationengine.dto.AchievementDto;
+import edu.upc.gessi.glidegamificationengine.dto.AchievementCategoryDTO;
+import edu.upc.gessi.glidegamificationengine.dto.AchievementDTO;
 import edu.upc.gessi.glidegamificationengine.entity.AchievementEntity;
 import edu.upc.gessi.glidegamificationengine.exception.ConstraintViolationException;
 import edu.upc.gessi.glidegamificationengine.exception.ResourceNotFoundException;
@@ -39,7 +39,7 @@ public class AchievementServiceImpl implements AchievementService {
     /* Methods callable from Controller Layer */
 
     @Override
-    public AchievementDto createAchievement(String achievementName, MultipartFile achievementIcon, String achievementCategory) throws IOException {
+    public AchievementDTO createAchievement(String achievementName, MultipartFile achievementIcon, String achievementCategory) throws IOException {
         AchievementEntity achievementEntity = new AchievementEntity();
         if (achievementName.isBlank())
             throw new ConstraintViolationException("Achievement name cannot be blank, please introduce a name.");
@@ -60,20 +60,20 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
     @Override
-    public List<AchievementDto> getAchievements() {
+    public List<AchievementDTO> getAchievements() {
         List<AchievementEntity> achievementEntities = achievementRepository.findAll();
         return achievementEntities.stream().map((achievementEntity -> AchievementMapper.mapToAchievementDto(achievementEntity)))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public AchievementDto getAchievement(Long achievementId) {
+    public AchievementDTO getAchievement(Long achievementId) {
         AchievementEntity achievementEntity = getAchievementEntityById(achievementId);
         return AchievementMapper.mapToAchievementDto(achievementEntity);
     }
 
     @Override
-    public AchievementDto updateAchievement(Long achievementId, String achievementName, MultipartFile achievementIcon, String achievementCategory) throws IOException {
+    public AchievementDTO updateAchievement(Long achievementId, String achievementName, MultipartFile achievementIcon, String achievementCategory) throws IOException {
         AchievementEntity achievementEntity = getAchievementEntityById(achievementId);
         if (achievementName.isBlank())
             throw new ConstraintViolationException("Achievement name cannot be blank, please introduce a name.");
@@ -112,18 +112,18 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
     @Override
-    public List<AchievementCategoryDto> getAchievementCategories() {
-        List<AchievementCategoryDto> achievementCategoryDtos = new ArrayList<>();
+    public List<AchievementCategoryDTO> getAchievementCategories() {
+        List<AchievementCategoryDTO> achievementCategoryDtos = new ArrayList<>();
         for (AchievementCategoryType value : AchievementCategoryType.values()) {
-            achievementCategoryDtos.add(new AchievementCategoryDto(value, value.getDescription(), value.isNumerical()));
+            achievementCategoryDtos.add(new AchievementCategoryDTO(value, value.getDescription(), value.isNumerical()));
         }
         return achievementCategoryDtos;
     }
 
     @Override
-    public AchievementCategoryDto getAchievementCategory(String achievementCategoryName) {
+    public AchievementCategoryDTO getAchievementCategory(String achievementCategoryName) {
         AchievementCategoryType achievementCategory = AchievementCategoryType.fromString(achievementCategoryName);
-        return new AchievementCategoryDto(achievementCategory, achievementCategory.getDescription(), achievementCategory.isNumerical());
+        return new AchievementCategoryDTO(achievementCategory, achievementCategory.getDescription(), achievementCategory.isNumerical());
     }
 
 }

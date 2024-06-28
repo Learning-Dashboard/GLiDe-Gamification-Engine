@@ -1,22 +1,22 @@
 package edu.upc.gessi.glidegamificationengine.service;
 
-import edu.upc.gessi.glidegamificationengine.dto.IndividualPlayerDto;
-import edu.upc.gessi.glidegamificationengine.dto.PlayerAchievementDto;
-import edu.upc.gessi.glidegamificationengine.dto.PlayerLoggedAchievementDto;
-import edu.upc.gessi.glidegamificationengine.dto.TeamPlayerDto;
+import edu.upc.gessi.glidegamificationengine.dto.IndividualPlayerDTO;
+import edu.upc.gessi.glidegamificationengine.dto.PlayerAchievementDTO;
+import edu.upc.gessi.glidegamificationengine.dto.PlayerLoggedAchievementDTO;
+import edu.upc.gessi.glidegamificationengine.dto.TeamPlayerDTO;
 
 import java.util.List;
 
 public interface PlayerService {
 
-    TeamPlayerDto getTeamPlayer(String teamPlayerPlayername);
+    TeamPlayerDTO getTeamPlayer(String teamPlayerPlayername);
 
-    IndividualPlayerDto getIndividualPlayer(String individualPlayerPlayername);
+    IndividualPlayerDTO getIndividualPlayer(String individualPlayerPlayername);
 
-    List<PlayerAchievementDto> getPlayerAchievements(String playerPlayername, Boolean achievementAttained, String achievementCategory);
+    List<PlayerAchievementDTO> getPlayerAchievements(String playerPlayername, Boolean achievementAttained, String achievementCategory);
 
-    List<PlayerLoggedAchievementDto> getPlayerLoggedAchievements(String playerPlayername, Boolean loggedAchievementViewed, String achievementCategory);
+    List<PlayerLoggedAchievementDTO> getPlayerLoggedAchievements(String playerPlayername, Boolean loggedAchievementViewed, String achievementCategory);
 
-    PlayerLoggedAchievementDto setPlayerLoggedAchievementViewed(String playerPlayername, Long loggedAchievementId, Boolean viewed);
+    PlayerLoggedAchievementDTO setPlayerLoggedAchievementViewed(String playerPlayername, Long loggedAchievementId, Boolean viewed);
 
 }

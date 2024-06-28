@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EvaluableActionDto {
+public class EvaluableActionDTO {
     private String id;
     private String name;
     private String description;

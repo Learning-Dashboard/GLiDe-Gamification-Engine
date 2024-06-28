@@ -1,15 +1,15 @@
 package edu.upc.gessi.glidegamificationengine.mapper;
 
-import edu.upc.gessi.glidegamificationengine.dto.GameDto;
+import edu.upc.gessi.glidegamificationengine.dto.GameDTO;
 import edu.upc.gessi.glidegamificationengine.entity.GameEntity;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 
 public class GameMapper {
 
-    public static GameDto mapToGameDto(GameEntity gameEntity){
+    public static GameDTO mapToGameDto(GameEntity gameEntity){
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.addMappings(new PropertyMap<GameEntity, GameDto>() {
+        modelMapper.addMappings(new PropertyMap<GameEntity, GameDTO>() {
             @Override
             protected void configure() {
                 using(ctx -> ((GameEntity) ctx.getSource()).getId().getSubjectAcronym())
@@ -20,7 +20,7 @@ public class GameMapper {
                         .map(source, destination.getPeriod());
             }
         });
-        return modelMapper.map(gameEntity, GameDto.class);
+        return modelMapper.map(gameEntity, GameDTO.class);
     }
 
 }

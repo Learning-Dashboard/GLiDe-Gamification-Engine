@@ -13,7 +13,7 @@ import java.sql.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlayerAchievementDto {
+public class PlayerAchievementDTO {
     private AchievementCategoryType category;
     private String name;
     private String icon;

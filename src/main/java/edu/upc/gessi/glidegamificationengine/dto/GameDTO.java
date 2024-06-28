@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GameDto {
+public class GameDTO {
         private String subjectAcronym;
         private Integer course;
         private PeriodType period;

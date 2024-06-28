@@ -1,7 +1,7 @@
 package edu.upc.gessi.glidegamificationengine.service;
 
-import edu.upc.gessi.glidegamificationengine.dto.LeaderboardDto;
-import edu.upc.gessi.glidegamificationengine.dto.LeaderboardResultDto;
+import edu.upc.gessi.glidegamificationengine.dto.LeaderboardDTO;
+import edu.upc.gessi.glidegamificationengine.dto.LeaderboardResultDTO;
 
 import java.sql.Date;
 import java.util.HashMap;
@@ -9,12 +9,12 @@ import java.util.List;
 
 public interface LeaderboardService {
 
-    LeaderboardDto createLeaderboard(String leaderboardName, Date leaderboardStartDate, Date leaderboardEndDate, String leaderboardAssessmentLevel, String leaderboardExtent, String leaderboardAnonymization, Boolean leaderboardStudentVisible, Long achievementId, String gameSubjectAcronym, Integer gameCourse, String gamePeriod);
+    LeaderboardDTO createLeaderboard(String leaderboardName, Date leaderboardStartDate, Date leaderboardEndDate, String leaderboardAssessmentLevel, String leaderboardExtent, String leaderboardAnonymization, Boolean leaderboardStudentVisible, Long achievementId, String gameSubjectAcronym, Integer gameCourse, String gamePeriod);
 
-    List<LeaderboardDto> getLeaderboards(String gameSubjectAcronym, Integer gameCourse, String gamePeriod);
+    List<LeaderboardDTO> getLeaderboards(String gameSubjectAcronym, Integer gameCourse, String gamePeriod);
 
-    LeaderboardDto getLeaderboard(Long leaderboardId);
+    LeaderboardDTO getLeaderboard(Long leaderboardId);
 
-    HashMap<String, List<LeaderboardResultDto>> getLeaderboardResults(Long leaderboardId);
+    HashMap<String, List<LeaderboardResultDTO>> getLeaderboardResults(Long leaderboardId);
 
 }

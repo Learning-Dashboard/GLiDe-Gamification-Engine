@@ -1,6 +1,6 @@
 package edu.upc.gessi.glidegamificationengine.mapper;
 
-import edu.upc.gessi.glidegamificationengine.dto.AchievementDto;
+import edu.upc.gessi.glidegamificationengine.dto.AchievementDTO;
 import edu.upc.gessi.glidegamificationengine.entity.AchievementEntity;
 import edu.upc.gessi.glidegamificationengine.type.AchievementCategoryType;
 import org.modelmapper.Converter;
@@ -9,17 +9,17 @@ import org.modelmapper.TypeMap;
 
 public class AchievementMapper {
 
-    public static AchievementDto mapToAchievementDto(AchievementEntity achievementEntity){
+    public static AchievementDTO mapToAchievementDto(AchievementEntity achievementEntity){
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(achievementEntity, AchievementDto.class);
+        return modelMapper.map(achievementEntity, AchievementDTO.class);
     }
 
-    public static AchievementEntity mapToAchievementEntity(AchievementDto achievementDto){
+    public static AchievementEntity mapToAchievementEntity(AchievementDTO achievementDto){
         ModelMapper modelMapper = new ModelMapper();
         Converter<String, AchievementCategoryType> stringToAchievementCategoryType = ctx -> AchievementCategoryType.fromString(ctx.getSource());
-        TypeMap<AchievementDto, AchievementEntity> propertyMapper = modelMapper.createTypeMap(AchievementDto.class, AchievementEntity.class);
+        TypeMap<AchievementDTO, AchievementEntity> propertyMapper = modelMapper.createTypeMap(AchievementDTO.class, AchievementEntity.class);
         propertyMapper.addMappings(mapper -> {
-            mapper.using(stringToAchievementCategoryType).map(AchievementDto::getCategory, AchievementEntity::setCategory);
+            mapper.using(stringToAchievementCategoryType).map(AchievementDTO::getCategory, AchievementEntity::setCategory);
         });
         return modelMapper.map(achievementDto, AchievementEntity.class);
     }

@@ -1,7 +1,7 @@
 package edu.upc.gessi.glidegamificationengine.controller;
 
-import edu.upc.gessi.glidegamificationengine.dto.AchievementCategoryDto;
-import edu.upc.gessi.glidegamificationengine.dto.AchievementDto;
+import edu.upc.gessi.glidegamificationengine.dto.AchievementCategoryDTO;
+import edu.upc.gessi.glidegamificationengine.dto.AchievementDTO;
 import edu.upc.gessi.glidegamificationengine.service.AchievementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -27,38 +27,38 @@ public class AchievementController {
     @Autowired
     private AchievementService achievementService;
 
-    @Operation(summary = "Create achievement", description = "Create a new achievement. The achievement name cannot be blank and must not be already used. The achievement icon is optional. The achievement category name must be a valid achievement category type (Points, Badges or Resources). The achievement is returned as an AchievementDto object.", tags = { "achievements" })
+    @Operation(summary = "Create achievement", description = "Create a new achievement. The achievement name cannot be blank and must not be already used. The achievement icon is optional. The achievement category name must be a valid achievement category type (Points, Badges or Resources). The achievement is returned as an AchievementDTO object.", tags = { "achievements" })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "CREATED: AchievementDto object.", content = @Content(schema = @Schema(implementation = AchievementDto.class))),
+            @ApiResponse(responseCode = "201", description = "CREATED: AchievementDTO object.", content = @Content(schema = @Schema(implementation = AchievementDTO.class))),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST: The given achievement category name not a valid achievement category type (Only available: Points, Badges, Resources).", content = @Content),
             @ApiResponse(responseCode = "409", description = "CONFLICT: (1) Achievement name cannot be blank; (2) The given achievement name already used.", content = @Content)
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AchievementDto> createAchievement(@RequestPart(value = "name") String achievementName,
+    public ResponseEntity<AchievementDTO> createAchievement(@RequestPart(value = "name") String achievementName,
                                                             @RequestPart(value = "icon", required = false) MultipartFile achievementIcon,
                                                             @RequestPart(value = "category") String achievementCategory) throws IOException {
-        AchievementDto savedAchievementDto = achievementService.createAchievement(achievementName, achievementIcon, achievementCategory);
+        AchievementDTO savedAchievementDto = achievementService.createAchievement(achievementName, achievementIcon, achievementCategory);
         return new ResponseEntity<>(savedAchievementDto, HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Get achievements", description = "Get all the achievements. The achievements are returned as a list of AchievementDto objects.", tags = { "achievements" })
+    @Operation(summary = "Get achievements", description = "Get all the achievements. The achievements are returned as a list of AchievementDTO objects.", tags = { "achievements" })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK: List of AchievementDto objects.", content = @Content(array = @ArraySchema(schema = @Schema(implementation = AchievementDto.class))))
+            @ApiResponse(responseCode = "200", description = "OK: List of AchievementDTO objects.", content = @Content(array = @ArraySchema(schema = @Schema(implementation = AchievementDTO.class))))
     })
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<AchievementDto>> getAchievements(){
-        List<AchievementDto> achievementDtos = achievementService.getAchievements();
+    public ResponseEntity<List<AchievementDTO>> getAchievements(){
+        List<AchievementDTO> achievementDtos = achievementService.getAchievements();
         return ResponseEntity.ok(achievementDtos);
     }
 
-    @Operation(summary = "Get achievement", description = "Get an achievement. The achievement is identified by its id. The achievement is returned as an AchievementDto object.", tags = { "achievements" })
+    @Operation(summary = "Get achievement", description = "Get an achievement. The achievement is identified by its id. The achievement is returned as an AchievementDTO object.", tags = { "achievements" })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK: AchievementDto object.", content = @Content(schema = @Schema(implementation = AchievementDto.class))),
+            @ApiResponse(responseCode = "200", description = "OK: AchievementDTO object.", content = @Content(schema = @Schema(implementation = AchievementDTO.class))),
             @ApiResponse(responseCode = "404", description = "NOT FOUND: Achievement with the given id not found.", content = @Content)
     })
     @GetMapping(value="{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AchievementDto> getAchievement(@PathVariable("id") Long achievementId) {
-        AchievementDto achievementDto = achievementService.getAchievement(achievementId);
+    public ResponseEntity<AchievementDTO> getAchievement(@PathVariable("id") Long achievementId) {
+        AchievementDTO achievementDto = achievementService.getAchievement(achievementId);
         return ResponseEntity.ok(achievementDto);
     }
 
@@ -69,26 +69,26 @@ public class AchievementController {
     })
     @GetMapping(value="/{id}/icon")
     public ResponseEntity<?> getAchievementIcon(@PathVariable("id") Long achievementId) {
-        AchievementDto achievementDto = achievementService.getAchievement(achievementId);
+        AchievementDTO achievementDto = achievementService.getAchievement(achievementId);
         byte[] iconBytes = java.util.Base64.getDecoder().decode(achievementDto.getIcon());
         Tika tika = new Tika();
         String iconMimeType = tika.detect(iconBytes);
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf(iconMimeType)).body(iconBytes);
     }
 
-    @Operation(summary = "Update achievement", description = "Update an achievement, recalculating the points and levels from all players when the updated achievement category type involved is Points. The achievement is identified by its id. The achievement name cannot be blank and must not be already used. The achievement icon is optional. The achievement category name must be a valid achievement category type (Points, Badges or Resources). The achievement is returned as an AchievementDto object.", tags = { "achievements" })
+    @Operation(summary = "Update achievement", description = "Update an achievement, recalculating the points and levels from all players when the updated achievement category type involved is Points. The achievement is identified by its id. The achievement name cannot be blank and must not be already used. The achievement icon is optional. The achievement category name must be a valid achievement category type (Points, Badges or Resources). The achievement is returned as an AchievementDTO object.", tags = { "achievements" })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK: AchievementDto object.", content = @Content(schema = @Schema(implementation = AchievementDto.class))),
+            @ApiResponse(responseCode = "200", description = "OK: AchievementDTO object.", content = @Content(schema = @Schema(implementation = AchievementDTO.class))),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST: The given achievement category name not a valid achievement category type (Only available: Points, Badges, Resources).", content = @Content),
             @ApiResponse(responseCode = "404", description = "NOT FOUND: Achievement with the given id not found.", content = @Content),
             @ApiResponse(responseCode = "409", description = "CONFLICT: (1) Achievement name cannot be blank; (2) The given achievement name already used.", content = @Content)
     })
     @PutMapping(value="{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AchievementDto> updateAchievement(@PathVariable("id") Long achievementId,
+    public ResponseEntity<AchievementDTO> updateAchievement(@PathVariable("id") Long achievementId,
                                                             @RequestPart(value = "name") String achievementName,
                                                             @RequestPart(value = "icon", required = false) MultipartFile achievementIcon,
                                                             @RequestPart(value = "category") String achievementCategory) throws IOException {
-        AchievementDto updatedAchievementDto = achievementService.updateAchievement(achievementId, achievementName, achievementIcon, achievementCategory);
+        AchievementDTO updatedAchievementDto = achievementService.updateAchievement(achievementId, achievementName, achievementIcon, achievementCategory);
         return ResponseEntity.ok(updatedAchievementDto);
     }
 
@@ -103,24 +103,24 @@ public class AchievementController {
         return ResponseEntity.ok("Achievement with id '" + achievementId + "' successfully deleted.");
     }
 
-    @Operation(summary = "Get achievement categories", description = "Get all the achievement categories. The achievement categories are returned as a list of AchievementCategoryDto objects.", tags = { "achievements" })
+    @Operation(summary = "Get achievement categories", description = "Get all the achievement categories. The achievement categories are returned as a list of AchievementCategoryDTO objects.", tags = { "achievements" })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK: List of AchievementCategoryDto objects.", content = @Content(array = @ArraySchema(schema = @Schema(implementation = AchievementCategoryDto.class))))
+            @ApiResponse(responseCode = "200", description = "OK: List of AchievementCategoryDTO objects.", content = @Content(array = @ArraySchema(schema = @Schema(implementation = AchievementCategoryDTO.class))))
     })
     @GetMapping(value="/categories", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<AchievementCategoryDto>> getAchievementCategories(){
-        List<AchievementCategoryDto> achievementCategoryDtos = achievementService.getAchievementCategories();
+    public ResponseEntity<List<AchievementCategoryDTO>> getAchievementCategories(){
+        List<AchievementCategoryDTO> achievementCategoryDtos = achievementService.getAchievementCategories();
         return ResponseEntity.ok(achievementCategoryDtos);
     }
 
-    @Operation(summary = "Get achievement category", description = "Get an achievement category. The achievement category is identified by its name, which must be a valid achievement category type (Points, Badges or Resources). The achievement category is returned as an AchievementCategoryDto object.", tags = { "achievements" })
+    @Operation(summary = "Get achievement category", description = "Get an achievement category. The achievement category is identified by its name, which must be a valid achievement category type (Points, Badges or Resources). The achievement category is returned as an AchievementCategoryDTO object.", tags = { "achievements" })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK: AchievementCategoryDto object.", content = @Content(schema = @Schema(implementation = AchievementCategoryDto.class))),
+            @ApiResponse(responseCode = "200", description = "OK: AchievementCategoryDTO object.", content = @Content(schema = @Schema(implementation = AchievementCategoryDTO.class))),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST: The given achievement category name not a valid achievement category type (Only available: Points, Badges, Resources).", content = @Content)
     })
     @GetMapping(value="/categories/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AchievementCategoryDto> getAchievementCategory(@PathVariable("name") String achievementCategoryName){
-        AchievementCategoryDto achievementCategoryDto = achievementService.getAchievementCategory(achievementCategoryName);
+    public ResponseEntity<AchievementCategoryDTO> getAchievementCategory(@PathVariable("name") String achievementCategoryName){
+        AchievementCategoryDTO achievementCategoryDto = achievementService.getAchievementCategory(achievementCategoryName);
         return ResponseEntity.ok(achievementCategoryDto);
     }
 

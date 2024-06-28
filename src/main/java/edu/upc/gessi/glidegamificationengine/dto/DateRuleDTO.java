@@ -17,7 +17,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DateRuleDto {
+public class DateRuleDTO {
     private Long id;
     private String name;
     private RuleType type;

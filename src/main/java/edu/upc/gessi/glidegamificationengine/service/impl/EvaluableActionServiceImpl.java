@@ -1,6 +1,6 @@
 package edu.upc.gessi.glidegamificationengine.service.impl;
 
-import edu.upc.gessi.glidegamificationengine.dto.EvaluableActionDto;
+import edu.upc.gessi.glidegamificationengine.dto.EvaluableActionDTO;
 import edu.upc.gessi.glidegamificationengine.entity.EvaluableActionEntity;
 import edu.upc.gessi.glidegamificationengine.exception.ResourceNotFoundException;
 import edu.upc.gessi.glidegamificationengine.mapper.EvaluableActionMapper;
@@ -99,14 +99,14 @@ public class EvaluableActionServiceImpl implements EvaluableActionService {
     }
 
     @Override
-    public List<EvaluableActionDto> getEvaluableActions() {
+    public List<EvaluableActionDTO> getEvaluableActions() {
         List<EvaluableActionEntity> evaluableActionEntities = evaluableActionRepository.findAll();
         return evaluableActionEntities.stream().map((evaluableActionEntity -> EvaluableActionMapper.mapToEvaluableActionDto(evaluableActionEntity)))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public EvaluableActionDto getEvaluableAction(String evaluableActionId) {
+    public EvaluableActionDTO getEvaluableAction(String evaluableActionId) {
         EvaluableActionEntity evaluableActionEntity = getEvaluableActionEntityById(evaluableActionId);
         return EvaluableActionMapper.mapToEvaluableActionDto(evaluableActionEntity);
     }

@@ -10,9 +10,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AchievementDto {
-    private Long id;
-    private String name;
-    private String icon;
-    private AchievementCategoryType category;
+public class AchievementCategoryDTO {
+    private AchievementCategoryType name;
+    private String description;
+    private Boolean numerical;
 }

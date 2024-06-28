@@ -1,7 +1,7 @@
 package edu.upc.gessi.glidegamificationengine.service.impl;
 
-import edu.upc.gessi.glidegamificationengine.dto.LeaderboardDto;
-import edu.upc.gessi.glidegamificationengine.dto.LeaderboardResultDto;
+import edu.upc.gessi.glidegamificationengine.dto.LeaderboardDTO;
+import edu.upc.gessi.glidegamificationengine.dto.LeaderboardResultDTO;
 import edu.upc.gessi.glidegamificationengine.entity.AchievementEntity;
 import edu.upc.gessi.glidegamificationengine.entity.GameEntity;
 import edu.upc.gessi.glidegamificationengine.entity.LeaderboardEntity;
@@ -44,7 +44,7 @@ public class LeaderboardServiceImpl implements LeaderboardService {
                 .orElseThrow(() -> new ResourceNotFoundException("Leaderboard with id '" + leaderboardId + "' not found."));
     }
 
-    protected HashMap<String, List<LeaderboardResultDto>> getLeaderboardResultsBySubject(LeaderboardEntity leaderboardEntity, HashMap<String, Integer> achievementUnitsResults, HashMap<String, Date> achievementDatesResults) {
+    protected HashMap<String, List<LeaderboardResultDTO>> getLeaderboardResultsBySubject(LeaderboardEntity leaderboardEntity, HashMap<String, Integer> achievementUnitsResults, HashMap<String, Date> achievementDatesResults) {
         Map<String, String> playerImages;
         if (leaderboardEntity.getAssessmentLevel().equals(PlayerType.Team)) {
             playerImages = leaderboardEntity.getGameEntity().getTeamPlayerLogos();
@@ -78,10 +78,10 @@ public class LeaderboardServiceImpl implements LeaderboardService {
                     .toList();
         }
 
-        HashMap<String, List<LeaderboardResultDto>> leaderboardResults = new HashMap<>();
-        List<LeaderboardResultDto> leaderboardResultDtos = new ArrayList<>();
+        HashMap<String, List<LeaderboardResultDTO>> leaderboardResults = new HashMap<>();
+        List<LeaderboardResultDTO> leaderboardResultDtos = new ArrayList<>();
         for (int i = 0; i < orderedPlayersWithAchievementResults.size(); i++) {
-            LeaderboardResultDto leaderboardResultDto = new LeaderboardResultDto();
+            LeaderboardResultDTO leaderboardResultDto = new LeaderboardResultDTO();
             leaderboardResultDto.setPosition(i + 1);
             leaderboardResultDto.setPlayername(orderedPlayersWithAchievementResults.get(i));
             leaderboardResultDto.setPlayerimage(playerImages.get(orderedPlayersWithAchievementResults.get(i)));
@@ -104,7 +104,7 @@ public class LeaderboardServiceImpl implements LeaderboardService {
                 .map(e -> e.getKey())
                 .toList();
         for (int i = 0; i < orderedPlayersWithoutAchievementResults.size(); i++) {
-            LeaderboardResultDto leaderboardResultDto = new LeaderboardResultDto();
+            LeaderboardResultDTO leaderboardResultDto = new LeaderboardResultDTO();
             leaderboardResultDto.setPosition(0);
             leaderboardResultDto.setPlayername(orderedPlayersWithoutAchievementResults.get(i));
             leaderboardResultDto.setPlayerimage(playerImages.get(orderedPlayersWithoutAchievementResults.get(i)));
@@ -116,8 +116,8 @@ public class LeaderboardServiceImpl implements LeaderboardService {
         return leaderboardResults;
     }
 
-    protected HashMap<String, List<LeaderboardResultDto>> getLeaderboardResultsByGroup(LeaderboardEntity leaderboardEntity, HashMap<String, Integer> achievementUnitsResults, HashMap<String, Date> achievementDatesResults) {
-        HashMap<String, List<LeaderboardResultDto>> leaderboardResults = new HashMap<>();
+    protected HashMap<String, List<LeaderboardResultDTO>> getLeaderboardResultsByGroup(LeaderboardEntity leaderboardEntity, HashMap<String, Integer> achievementUnitsResults, HashMap<String, Date> achievementDatesResults) {
+        HashMap<String, List<LeaderboardResultDTO>> leaderboardResults = new HashMap<>();
 
         for (GameGroupEntity gameGroupEntity : leaderboardEntity.getGameEntity().getGameGroupEntities()) {
             Map<String, String> playerImages;
@@ -159,9 +159,9 @@ public class LeaderboardServiceImpl implements LeaderboardService {
                         .toList();
             }
 
-            List<LeaderboardResultDto> leaderboardResultDtos = new ArrayList<>();
+            List<LeaderboardResultDTO> leaderboardResultDtos = new ArrayList<>();
             for (int i = 0; i < orderedPlayersWithAchievementResults.size(); i++) {
-                LeaderboardResultDto leaderboardResultDto = new LeaderboardResultDto();
+                LeaderboardResultDTO leaderboardResultDto = new LeaderboardResultDTO();
                 leaderboardResultDto.setPosition(i + 1);
                 leaderboardResultDto.setPlayername(orderedPlayersWithAchievementResults.get(i));
                 leaderboardResultDto.setPlayerimage(playerImages.get(orderedPlayersWithAchievementResults.get(i)));
@@ -184,7 +184,7 @@ public class LeaderboardServiceImpl implements LeaderboardService {
                     .map(e -> e.getKey())
                     .toList();
             for (int i = 0; i < orderedPlayersWithoutAchievementResults.size(); i++) {
-                LeaderboardResultDto leaderboardResultDto = new LeaderboardResultDto();
+                LeaderboardResultDTO leaderboardResultDto = new LeaderboardResultDTO();
                 leaderboardResultDto.setPosition(0);
                 leaderboardResultDto.setPlayername(orderedPlayersWithoutAchievementResults.get(i));
                 leaderboardResultDto.setPlayerimage(playerImages.get(orderedPlayersWithoutAchievementResults.get(i)));
@@ -202,7 +202,7 @@ public class LeaderboardServiceImpl implements LeaderboardService {
     /* Methods callable from Controller Layer */
 
     @Override
-    public LeaderboardDto createLeaderboard(String leaderboardName, Date leaderboardStartDate, Date leaderboardEndDate, String leaderboardAssessmentLevel, String leaderboardExtent, String leaderboardAnonymization, Boolean leaderboardStudentVisible, Long achievementId, String gameSubjectAcronym, Integer gameCourse, String gamePeriod) {
+    public LeaderboardDTO createLeaderboard(String leaderboardName, Date leaderboardStartDate, Date leaderboardEndDate, String leaderboardAssessmentLevel, String leaderboardExtent, String leaderboardAnonymization, Boolean leaderboardStudentVisible, Long achievementId, String gameSubjectAcronym, Integer gameCourse, String gamePeriod) {
         PlayerType leaderboardAssessmentLevelType = PlayerType.fromString(leaderboardAssessmentLevel);
         ExtentType leaderboardExtentType = ExtentType.fromString(leaderboardExtent);
         AnonymizationType leaderboardAnonymizationType = AnonymizationType.fromString(leaderboardAnonymization);
@@ -238,7 +238,7 @@ public class LeaderboardServiceImpl implements LeaderboardService {
     }
 
     @Override
-    public List<LeaderboardDto> getLeaderboards(String gameSubjectAcronym, Integer gameCourse, String gamePeriod) {
+    public List<LeaderboardDTO> getLeaderboards(String gameSubjectAcronym, Integer gameCourse, String gamePeriod) {
         List<LeaderboardEntity> leaderboardEntities;
 
         if (gameSubjectAcronym != null || gameCourse != null || gamePeriod != null) {
@@ -266,13 +266,13 @@ public class LeaderboardServiceImpl implements LeaderboardService {
     }
 
     @Override
-    public LeaderboardDto getLeaderboard(Long leaderboardId) {
+    public LeaderboardDTO getLeaderboard(Long leaderboardId) {
         return LeaderboardMapper.mapToLeaderboardDto(getLeaderboardEntityById(leaderboardId));
     }
 
     @Override
     @Transactional
-    public HashMap<String, List<LeaderboardResultDto>> getLeaderboardResults(Long leaderboardId) {
+    public HashMap<String, List<LeaderboardResultDTO>> getLeaderboardResults(Long leaderboardId) {
         LeaderboardEntity leaderboardEntity = getLeaderboardEntityById(leaderboardId);
 
         GameKey gameId = leaderboardEntity.getGameEntity().getId();

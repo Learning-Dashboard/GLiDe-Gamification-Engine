@@ -10,13 +10,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class IndividualPlayerDto {
+public class TeamPlayerDTO {
     private String playername;
     private Integer points;
     private Integer level;
     private PlayerType type;
-    private String role;
-    private String avatar;
-    private String teamPlayername;
-    private String studentUsername;
+    private String logo;
 }

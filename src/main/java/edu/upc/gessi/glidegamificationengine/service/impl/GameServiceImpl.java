@@ -1,12 +1,11 @@
 package edu.upc.gessi.glidegamificationengine.service.impl;
 
-import edu.upc.gessi.glidegamificationengine.dto.GameDto;
+import edu.upc.gessi.glidegamificationengine.dto.GameDTO;
 import edu.upc.gessi.glidegamificationengine.entity.*;
 import edu.upc.gessi.glidegamificationengine.entity.key.GameKey;
 import edu.upc.gessi.glidegamificationengine.exception.ConstraintViolationException;
 import edu.upc.gessi.glidegamificationengine.exception.ResourceNotFoundException;
 import edu.upc.gessi.glidegamificationengine.mapper.GameMapper;
-import edu.upc.gessi.glidegamificationengine.mapper.LeaderboardMapper;
 import edu.upc.gessi.glidegamificationengine.repository.GameRepository;
 import edu.upc.gessi.glidegamificationengine.service.GameService;
 import edu.upc.gessi.glidegamificationengine.type.AchievementCategoryType;
@@ -84,7 +83,7 @@ public class GameServiceImpl implements GameService {
     /* Methods callable from Controller Layer */
 
     @Override
-    public List<GameDto> getGames(String gameSubjectAcronym, Integer gameCourse, String gamePeriod) {
+    public List<GameDTO> getGames(String gameSubjectAcronym, Integer gameCourse, String gamePeriod) {
         List<GameEntity> gameEntities = new ArrayList<>();
 
         if (gameSubjectAcronym != null) {

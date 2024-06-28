@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SimpleRuleDto {
+public class SimpleRuleDTO {
     private Long id;
     private String name;
     private RuleType type;

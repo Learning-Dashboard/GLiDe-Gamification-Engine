@@ -1,6 +1,6 @@
 package edu.upc.gessi.glidegamificationengine.controller;
 
-import edu.upc.gessi.glidegamificationengine.dto.EvaluableActionDto;
+import edu.upc.gessi.glidegamificationengine.dto.EvaluableActionDTO;
 import edu.upc.gessi.glidegamificationengine.service.EvaluableActionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -35,24 +35,24 @@ public class EvaluableActionController {
         return ResponseEntity.ok("Evaluable actions successfully initiated.");
     }
 
-    @Operation(summary = "Get evaluable actions", description = "Get all the evaluable actions. The evaluable actions are returned as a list of EvaluableActionDto objects.", tags = { "evaluableActions" })
+    @Operation(summary = "Get evaluable actions", description = "Get all the evaluable actions. The evaluable actions are returned as a list of EvaluableActionDTO objects.", tags = { "evaluableActions" })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK: List of EvaluableActionDto objects.", content = @Content(array = @ArraySchema(schema = @Schema(implementation = EvaluableActionDto.class))))
+            @ApiResponse(responseCode = "200", description = "OK: List of EvaluableActionDTO objects.", content = @Content(array = @ArraySchema(schema = @Schema(implementation = EvaluableActionDTO.class))))
     })
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<EvaluableActionDto>> getEvaluableActions(){
-        List<EvaluableActionDto> evaluableActionDtos = evaluableActionService.getEvaluableActions();
+    public ResponseEntity<List<EvaluableActionDTO>> getEvaluableActions(){
+        List<EvaluableActionDTO> evaluableActionDtos = evaluableActionService.getEvaluableActions();
         return ResponseEntity.ok(evaluableActionDtos);
     }
 
-    @Operation(summary = "Get evaluable action", description = "Get an evaluable action. The evaluable action is identified by its id. The evaluable action is returned as an EvaluableActionDto object.", tags = { "evaluableActions" })
+    @Operation(summary = "Get evaluable action", description = "Get an evaluable action. The evaluable action is identified by its id. The evaluable action is returned as an EvaluableActionDTO object.", tags = { "evaluableActions" })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK: EvaluableActionDto object.", content = @Content(schema = @Schema(implementation = EvaluableActionDto.class))),
+            @ApiResponse(responseCode = "200", description = "OK: EvaluableActionDTO object.", content = @Content(schema = @Schema(implementation = EvaluableActionDTO.class))),
             @ApiResponse(responseCode = "404", description = "NOT FOUND: Evaluable action with the given id not found.", content = @Content)
     })
     @GetMapping(value="{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EvaluableActionDto> getEvaluableAction(@PathVariable("id") String evaluableActionId) {
-        EvaluableActionDto evaluableActionDto = evaluableActionService.getEvaluableAction(evaluableActionId);
+    public ResponseEntity<EvaluableActionDTO> getEvaluableAction(@PathVariable("id") String evaluableActionId) {
+        EvaluableActionDTO evaluableActionDto = evaluableActionService.getEvaluableAction(evaluableActionId);
         return ResponseEntity.ok(evaluableActionDto);
     }
 

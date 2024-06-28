@@ -1,7 +1,7 @@
 package edu.upc.gessi.glidegamificationengine.service.impl;
 
-import edu.upc.gessi.glidegamificationengine.dto.DateRuleDto;
-import edu.upc.gessi.glidegamificationengine.dto.SimpleRuleDto;
+import edu.upc.gessi.glidegamificationengine.dto.DateRuleDTO;
+import edu.upc.gessi.glidegamificationengine.dto.SimpleRuleDTO;
 import edu.upc.gessi.glidegamificationengine.entity.*;
 import edu.upc.gessi.glidegamificationengine.entity.key.GameKey;
 import edu.upc.gessi.glidegamificationengine.exception.ConstraintViolationException;
@@ -50,7 +50,7 @@ public class RuleServiceImpl implements RuleService {
     /* Methods callable from Controller Layer */
 
     @Override
-    public SimpleRuleDto createSimpleRule(String simpleRuleName, Integer simpleRuleRepetitions, String gameSubjectAcronym, Integer gameCourse, String gamePeriod, String evaluableActionId, Long achievementId, String achievementAssignmentMessage, Boolean achievementAssignmentOnlyFirstTime, String achievementAssignmentCondition, List<Float> achievementAssignmentConditionParameters, Integer achievementAssignmentUnits, String achievementAssignmentAssessmentLevel) {
+    public SimpleRuleDTO createSimpleRule(String simpleRuleName, Integer simpleRuleRepetitions, String gameSubjectAcronym, Integer gameCourse, String gamePeriod, String evaluableActionId, Long achievementId, String achievementAssignmentMessage, Boolean achievementAssignmentOnlyFirstTime, String achievementAssignmentCondition, List<Float> achievementAssignmentConditionParameters, Integer achievementAssignmentUnits, String achievementAssignmentAssessmentLevel) {
         PeriodType gamePeriodType = PeriodType.fromString(gamePeriod);
         ConditionType achievementAssignmentConditionType = ConditionType.fromString(achievementAssignmentCondition);
         if ((achievementAssignmentConditionParameters == null && achievementAssignmentConditionType.getNumberOfRequiredParameters() != 0) || (achievementAssignmentConditionParameters != null && achievementAssignmentConditionParameters.size() != achievementAssignmentConditionType.getNumberOfRequiredParameters())) {
@@ -86,7 +86,7 @@ public class RuleServiceImpl implements RuleService {
     }
 
     @Override
-    public List<SimpleRuleDto> getSimpleRules(String gameSubjectAcronym, Integer gameCourse, String gamePeriod) {
+    public List<SimpleRuleDTO> getSimpleRules(String gameSubjectAcronym, Integer gameCourse, String gamePeriod) {
         List<SimpleRuleEntity> simpleRuleEntities;
 
         if (gameSubjectAcronym != null || gameCourse != null || gamePeriod != null) {
@@ -114,14 +114,14 @@ public class RuleServiceImpl implements RuleService {
     }
 
     @Override
-    public SimpleRuleDto getSimpleRule(Long simpleRuleId) {
+    public SimpleRuleDTO getSimpleRule(Long simpleRuleId) {
         SimpleRuleEntity simpleRuleEntity = simpleRuleRepository.findById(simpleRuleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Simple rule with id '" + simpleRuleId + "' not found."));
         return RuleMapper.mapToSimpleRuleDto(simpleRuleEntity);
     }
 
     @Override
-    public DateRuleDto createDateRule(String dateRuleName, Integer dateRuleRepetitions, Date dateRuleStartDate, Date dateRuleEndDate, String gameSubjectAcronym, Integer gameCourse, String gamePeriod, String evaluableActionId, Long achievementId, String achievementAssignmentMessage, Boolean achievementAssignmentOnlyFirstTime, String achievementAssignmentCondition, List<Float> achievementAssignmentConditionParameters, Integer achievementAssignmentUnits, String achievementAssignmentAssessmentLevel) {
+    public DateRuleDTO createDateRule(String dateRuleName, Integer dateRuleRepetitions, Date dateRuleStartDate, Date dateRuleEndDate, String gameSubjectAcronym, Integer gameCourse, String gamePeriod, String evaluableActionId, Long achievementId, String achievementAssignmentMessage, Boolean achievementAssignmentOnlyFirstTime, String achievementAssignmentCondition, List<Float> achievementAssignmentConditionParameters, Integer achievementAssignmentUnits, String achievementAssignmentAssessmentLevel) {
         PeriodType gamePeriodType = PeriodType.fromString(gamePeriod);
         ConditionType achievementAssignmentConditionType = ConditionType.fromString(achievementAssignmentCondition);
         if ((achievementAssignmentConditionParameters == null && achievementAssignmentConditionType.getNumberOfRequiredParameters() != 0) || (achievementAssignmentConditionParameters != null && achievementAssignmentConditionParameters.size() != achievementAssignmentConditionType.getNumberOfRequiredParameters())) {
@@ -161,7 +161,7 @@ public class RuleServiceImpl implements RuleService {
     }
 
     @Override
-    public List<DateRuleDto> getDateRules(String gameSubjectAcronym, Integer gameCourse, String gamePeriod) {
+    public List<DateRuleDTO> getDateRules(String gameSubjectAcronym, Integer gameCourse, String gamePeriod) {
         List<DateRuleEntity> dateRuleEntities;
 
         if (gameSubjectAcronym != null || gameCourse != null || gamePeriod != null) {
@@ -189,7 +189,7 @@ public class RuleServiceImpl implements RuleService {
     }
 
     @Override
-    public DateRuleDto getDateRule(Long dateRuleId) {
+    public DateRuleDTO getDateRule(Long dateRuleId) {
         DateRuleEntity dateRuleEntity = dateRuleRepository.findById(dateRuleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Date rule with id '" + dateRuleId + "' not found."));
         return RuleMapper.mapToDateRuleDto(dateRuleEntity);
