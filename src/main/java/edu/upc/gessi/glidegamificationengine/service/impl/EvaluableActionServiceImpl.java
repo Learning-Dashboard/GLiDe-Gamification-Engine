@@ -21,6 +21,14 @@ public class EvaluableActionServiceImpl implements EvaluableActionService {
     @Autowired
     private EvaluableActionRepository evaluableActionRepository;
 
+    /* Methods callable from Service Layer */
+
+    protected EvaluableActionEntity getEvaluableActionEntityById(String evaluableActionId) {
+        return evaluableActionRepository.findById(evaluableActionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Evaluable action with id '" + evaluableActionId + "' not found."));
+    }
+
+
     /* Methods callable from Controller Layer */
 
     @Override
@@ -99,8 +107,7 @@ public class EvaluableActionServiceImpl implements EvaluableActionService {
 
     @Override
     public EvaluableActionDto getEvaluableAction(String evaluableActionId) {
-        EvaluableActionEntity evaluableActionEntity = evaluableActionRepository.findById(evaluableActionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Evaluable action with id '" + evaluableActionId + "' not found."));
+        EvaluableActionEntity evaluableActionEntity = getEvaluableActionEntityById(evaluableActionId);
         return EvaluableActionMapper.mapToEvaluableActionDto(evaluableActionEntity);
     }
 

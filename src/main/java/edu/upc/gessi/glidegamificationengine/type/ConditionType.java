@@ -1,6 +1,10 @@
 package edu.upc.gessi.glidegamificationengine.type;
 
+import edu.upc.gessi.glidegamificationengine.exception.TypeNotCorrectException;
+
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public enum ConditionType {
     ValueGreaterThan            { @Override public Integer getNumberOfRequiredParameters() { return 1; };
@@ -33,5 +37,17 @@ public enum ConditionType {
             case ValueInsideOfRange -> (value >= parameters.getFirst() && value <= parameters.getLast());
             default -> false;
         };
+    }
+
+    public static ConditionType fromString(String string) {
+        ConditionType conditionType;
+        try{
+            conditionType = ConditionType.valueOf(string);
+        }
+        catch (IllegalArgumentException e){
+            throw new TypeNotCorrectException("Condition name '" + string + "' not a valid condition type (Only available: " +
+                    Stream.of(ConditionType.values()).map(value -> "'" + value.toString() + "'").collect(Collectors.joining(", ")) + ").");
+        }
+        return conditionType;
     }
 }

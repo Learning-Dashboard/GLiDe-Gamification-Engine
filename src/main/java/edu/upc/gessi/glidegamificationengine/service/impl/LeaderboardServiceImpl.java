@@ -218,7 +218,7 @@ public class LeaderboardServiceImpl implements LeaderboardService {
         if (leaderboardName.isBlank())
             throw new ConstraintViolationException("Leaderboard name cannot be blank, please introduce a name.");
         if (leaderboardStartDate.after(leaderboardEndDate))
-            throw new ConstraintViolationException("The leaderboard start date cannot be posterior to the leaderboard end date, please introduce different dates.");
+            throw new ConstraintViolationException("Leaderboard start date cannot be posterior to leaderboard end date, please introduce different dates.");
         if (!gameEntity.hasAchievement(achievementEntity))
             throw new ConstraintViolationException("The game assigned to the leaderboard must have at least one rule with the same achievement assigned to the leaderboard.");
 

@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.hibernate.annotations.Check;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,13 @@ public class GameEntity {
 
     public StateType getState() {
         return StateType.getState(startDate, endDate);
+    }
+
+    public void addRuleEntity(RuleEntity ruleEntity) {
+        if (ruleEntities == null) {
+            ruleEntities = new ArrayList<>();
+        }
+        ruleEntities.add(ruleEntity);
     }
 
     public Map<String, String> getTeamPlayerLogos() {

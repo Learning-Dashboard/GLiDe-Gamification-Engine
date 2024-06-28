@@ -51,6 +51,13 @@ public class AchievementEntity {
         leaderboardEntities.add(leaderboardEntity);
     }
 
+    public void addAchievementAssignmentEntity(AchievementAssignmentEntity achievementAssignmentEntity) {
+        if (achievementAssignmentEntities == null) {
+            achievementAssignmentEntities = new ArrayList<>();
+        }
+        achievementAssignmentEntities.add(achievementAssignmentEntity);
+    }
+
     public List<Map> getResults(GameKey gameId, PlayerType assessmentLevel, Date startDate, Date endDate) {
         Map<String, Integer> playerUnits = new HashMap<>();
         Map<String, Date> playerDates = new HashMap<>();
