@@ -159,16 +159,21 @@ public class GameServiceImpl implements GameService {
         }
 
         for (RuleEntity ruleEntity : gameEntity.getRuleEntities()) {
-            if (ruleEntity.checkRuleValidity(Date.valueOf(timestamp.toLocalDateTime().toLocalDate()))) {
-                if (ruleEntity.getEvaluableActionEntity().getAssessmentLevel().equals(PlayerType.Team)) {
-                    for (PlayerEntity playerEntity : teamPlayerEntities) {
-                        evaluateRule(ruleEntity, playerEntity, timestamp);
-                    }
-                } else { //PlayerType.Individual
-                    for (PlayerEntity playerEntity : individualPlayerEntities) {
-                        evaluateRule(ruleEntity, playerEntity, timestamp);
+            try {
+                if (ruleEntity.checkRuleValidity(Date.valueOf(timestamp.toLocalDateTime().toLocalDate()))) {
+                    if (ruleEntity.getEvaluableActionEntity().getAssessmentLevel().equals(PlayerType.Team)) {
+                        for (PlayerEntity playerEntity : teamPlayerEntities) {
+                            evaluateRule(ruleEntity, playerEntity, timestamp);
+                        }
+                    } else { //PlayerType.Individual
+                        for (PlayerEntity playerEntity : individualPlayerEntities) {
+                            evaluateRule(ruleEntity, playerEntity, timestamp);
+                        }
                     }
                 }
+            } catch (Exception e) {
+                System.err.println("Error evaluationg rule with evaluable action: " + ruleEntity.getEvaluableActionEntity().getId()
+                        + ". Make sure when using rules with strategic indicators or quality factors that these are defined for all teams on the LD.");
             }
         }
     }
