@@ -10,4 +10,5 @@ public interface GameService {
 
     void evaluateGame(String gameSubjectAcronym, Integer gameCourse, String gamePeriod);
 
+    GameDTO addLevelPolicy(String gameSubjectAcronym, Integer gameCourse, String gamePeriod, Float firstParameter, Float secondParameter, Float thirdParameter);
 }

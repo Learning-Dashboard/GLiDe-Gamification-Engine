@@ -178,4 +178,23 @@ public class GameServiceImpl implements GameService {
         }
     }
 
+    @Override
+    public GameDTO addLevelPolicy(String gameSubjectAcronym, Integer gameCourse, String gamePeriod, Float firstParameter, Float secondParameter, Float thirdParameter){
+        GameKey gameKey = new GameKey();
+        gameKey.setSubjectAcronym(gameSubjectAcronym);
+        gameKey.setCourse(gameCourse);
+        gameKey.setPeriod(PeriodType.fromString(gamePeriod));
+        GameEntity gameEntity = gameRepository.findById(gameKey)
+                .orElseThrow(() -> new ResourceNotFoundException("Game with acronym: " + gameSubjectAcronym + ", course: " + gameCourse + ", period: " + gamePeriod + " not found."));
+        if (firstParameter == null || secondParameter == null || thirdParameter == null)
+            throw new ConstraintViolationException("Level function parameters cannot be null.");
+        gameEntity.setLevelPolicyFunctionParameters(new ArrayList<>());
+        gameEntity.getLevelPolicyFunctionParameters().add(firstParameter);
+        gameEntity.getLevelPolicyFunctionParameters().add(secondParameter);
+        gameEntity.getLevelPolicyFunctionParameters().add(thirdParameter);
+
+        GameEntity savedGame = gameRepository.save(gameEntity);
+
+        return GameMapper.mapToGameDto(savedGame);
+    }
 }
