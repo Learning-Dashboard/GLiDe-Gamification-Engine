@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.MediaType;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -38,7 +37,7 @@ public class SubjectController {
     @Operation(summary = "Create subject", description = "Create a new subject.", tags = { "subjects" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "CREATED: AchievementDTO object.", content = @Content(schema = @Schema(implementation = SubjectDTO.class))),
-            @ApiResponse(responseCode = "409", description = "CONFLICT: (1) SUbject acronym cannot be blank. (2) The given subject acronym is already used.", content = @Content)
+            @ApiResponse(responseCode = "409", description = "CONFLICT: (1) Subject acronym cannot be blank. (2) The given subject acronym is already used.", content = @Content)
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SubjectDTO> createSubject(@RequestPart(value = "acronym") String acronym,

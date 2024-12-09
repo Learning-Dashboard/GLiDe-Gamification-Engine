@@ -1,6 +1,7 @@
 package edu.upc.gessi.glidegamificationengine.controller;
 
 import edu.upc.gessi.glidegamificationengine.dto.GameDTO;
+import edu.upc.gessi.glidegamificationengine.dto.SubjectDTO;
 import edu.upc.gessi.glidegamificationengine.service.GameService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,4 +53,20 @@ public class GameController {
         return ResponseEntity.ok("Game corresponding to subject with acronym '" + gameSubjectAcronym + "', course '" + gameCourse + "' and period '" + gamePeriod + "' successfully evaluated.");
     }
 
+    @Operation(summary = "Add level policy function parameters to game", description = "Sets the level policy function parameters to the values given.", tags = { "games" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "CREATED: Level policy function parameters for game.", content = @Content(schema = @Schema(implementation = GameDTO.class))),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND: Game with the given subject acronym, course and period not found.", content = @Content),
+            @ApiResponse(responseCode = "409", description = "CONFLICT: (1) Subject acronym cannot be blank. (2) The given subject acronym is already used.", content = @Content)
+    })
+    @PostMapping(value ="/levelPolicyFunctionParameteres", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GameDTO> addLevelPolicyFunctionParameters(@RequestPart(value = "gameSubjectAcronym") String gameSubjectAcronym,
+                                                                    @RequestPart(value = "gameCourse") Integer gameCourse,
+                                                                    @RequestPart(value = "gamePeriod") String gamePeriod,
+                                                                    @RequestPart(value = "firstParameter") Float firstParameter,
+                                                                    @RequestPart(value = "secondParameter") Float secondParameter,
+                                                                    @RequestPart(value = "thirdParameter") Float thirdParameter){
+        GameDTO savedGameDto = gameService.addLevelPolicy(gameSubjectAcronym,gameCourse,gamePeriod,firstParameter,secondParameter,thirdParameter);
+        return new ResponseEntity<>(savedGameDto, HttpStatus.CREATED);
+    }
 }
