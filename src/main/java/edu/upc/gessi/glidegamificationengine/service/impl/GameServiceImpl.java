@@ -131,7 +131,7 @@ public class GameServiceImpl implements GameService {
             }
         }
 
-        return gameEntities.stream().map((gameEntity -> GameMapper.mapToGameDto(gameEntity)))
+        return gameEntities.stream().map((GameMapper::mapToGameDto))
                 .collect(Collectors.toList());
     }
 
@@ -182,27 +182,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public GameDTO addLevelPolicy(String gameSubjectAcronym, Integer gameCourse, String gamePeriod, Float firstParameter, Float secondParameter, Float thirdParameter){
-        GameKey gameKey = new GameKey();
-        gameKey.setSubjectAcronym(gameSubjectAcronym);
-        gameKey.setCourse(gameCourse);
-        gameKey.setPeriod(PeriodType.fromString(gamePeriod));
-        GameEntity gameEntity = gameRepository.findById(gameKey)
-                .orElseThrow(() -> new ResourceNotFoundException("Game with acronym: " + gameSubjectAcronym + ", course: " + gameCourse + ", period: " + gamePeriod + " not found."));
-        if (firstParameter == null || secondParameter == null || thirdParameter == null)
-            throw new ConstraintViolationException("Level function parameters cannot be null.");
-        gameEntity.setLevelPolicyFunctionParameters(new ArrayList<>());
-        gameEntity.getLevelPolicyFunctionParameters().add(firstParameter);
-        gameEntity.getLevelPolicyFunctionParameters().add(secondParameter);
-        gameEntity.getLevelPolicyFunctionParameters().add(thirdParameter);
-
-        GameEntity savedGame = gameRepository.save(gameEntity);
-
-        return GameMapper.mapToGameDto(savedGame);
-    }
-
-    @Override
-    public GameDTO createGame(String subjectAcronym, Integer course, String period, Date startDate, Date endDate){
+    public GameDTO createGame(String subjectAcronym, Integer course, String period, Date startDate, Date endDate, Float firstLevelPolicyParameter, Float secondLevelPolicyParameter, Float thirdLevelPolicyParameter){
         GameEntity gameEntity = new GameEntity();
         if (subjectAcronym.isBlank() || course == null || period.isBlank() || startDate == null || endDate == null)
             throw new ConstraintViolationException("Game attributes cannot be blank");
@@ -218,6 +198,10 @@ public class GameServiceImpl implements GameService {
         gameEntity.setStartDate(startDate);
         gameEntity.setEndDate(endDate);
         gameEntity.setSubjectEntity(subjectEntity);
+        gameEntity.setLevelPolicyFunctionParameters(new ArrayList<>());
+        gameEntity.getLevelPolicyFunctionParameters().add(firstLevelPolicyParameter);
+        gameEntity.getLevelPolicyFunctionParameters().add(secondLevelPolicyParameter);
+        gameEntity.getLevelPolicyFunctionParameters().add(thirdLevelPolicyParameter);
 
         GameEntity savedGameEntity;
         try{

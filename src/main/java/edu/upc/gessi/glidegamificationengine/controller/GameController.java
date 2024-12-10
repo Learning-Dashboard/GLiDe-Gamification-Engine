@@ -53,23 +53,6 @@ public class GameController {
         return ResponseEntity.ok("Game corresponding to subject with acronym '" + gameSubjectAcronym + "', course '" + gameCourse + "' and period '" + gamePeriod + "' successfully evaluated.");
     }
 
-    @Operation(summary = "Add level policy function parameters to game", description = "Sets the level policy function parameters to the values given.", tags = { "games" })
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "CREATED: Level policy function parameters for game.", content = @Content(schema = @Schema(implementation = GameDTO.class))),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND: Game with the given subject acronym, course and period not found.", content = @Content),
-            @ApiResponse(responseCode = "409", description = "CONFLICT: (1) Subject acronym cannot be blank. (2) The given subject acronym is already used.", content = @Content)
-    })
-    @PostMapping(value ="/levelPolicyFunctionParameteres", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GameDTO> addLevelPolicyFunctionParameters(@RequestPart(value = "gameSubjectAcronym") String gameSubjectAcronym,
-                                                                    @RequestPart(value = "gameCourse") Integer gameCourse,
-                                                                    @RequestPart(value = "gamePeriod") String gamePeriod,
-                                                                    @RequestPart(value = "firstParameter") Float firstParameter,
-                                                                    @RequestPart(value = "secondParameter") Float secondParameter,
-                                                                    @RequestPart(value = "thirdParameter") Float thirdParameter){
-        GameDTO savedGameDto = gameService.addLevelPolicy(gameSubjectAcronym,gameCourse,gamePeriod,firstParameter,secondParameter,thirdParameter);
-        return new ResponseEntity<>(savedGameDto, HttpStatus.CREATED);
-    }
-
     @Operation(summary = "Create game", description = "Create new game from given parameters.", tags = { "games" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "CREATED: Game.", content = @Content(schema = @Schema(implementation = GameDTO.class))),
@@ -81,8 +64,11 @@ public class GameController {
                                               @RequestPart(value = "course") Integer course,
                                               @RequestPart(value = "period") String period,
                                               @RequestPart(value = "startDate") @Schema(type = "string", format = "date", pattern = "yyyy-MM-dd") String startDate,
-                                              @RequestPart(value = "endDate") @Schema(type = "string", format = "date", pattern = "yyyy-MM-dd") String endDate){
-        GameDTO savedGameDto = gameService.createGame(subjectAcronym, course, period, Date.valueOf(startDate), Date.valueOf(endDate));
+                                              @RequestPart(value = "endDate") @Schema(type = "string", format = "date", pattern = "yyyy-MM-dd") String endDate,
+                                              @RequestPart(value = "firstLevelPolicyParameter") Float firstLevelPolicyParameter,
+                                              @RequestPart(value = "secondLevelPolicyParameter") Float secondLevelPolicyParameter,
+                                              @RequestPart(value = "thirdLevelPolicyParameter") Float thirdLevelPolicyParameter){
+        GameDTO savedGameDto = gameService.createGame(subjectAcronym, course, period, Date.valueOf(startDate), Date.valueOf(endDate), firstLevelPolicyParameter, secondLevelPolicyParameter, thirdLevelPolicyParameter);
         return new ResponseEntity<>(savedGameDto, HttpStatus.CREATED);
     }
 }
