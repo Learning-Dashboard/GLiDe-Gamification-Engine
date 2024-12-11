@@ -4,5 +4,5 @@ import edu.upc.gessi.glidegamificationengine.dto.GameGroupDTO;
 
 public interface GameGroupService {
 
-    GameGroupDTO createSubject(Integer gameCourse, String gamePeriod, String gameSubjectAcronym, Integer group);
+    GameGroupDTO createGroup(Integer gameCourse, String gamePeriod, String gameSubjectAcronym, Integer group);
 }

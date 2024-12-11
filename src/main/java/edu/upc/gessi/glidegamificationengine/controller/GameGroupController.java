@@ -32,7 +32,7 @@ public class GameGroupController {
                                                         @RequestPart(value = "gameCourse") Integer gameCourse,
                                                         @RequestPart(value = "gamePeriod") String gamePeriod,
                                                         @RequestPart(value = "group") Integer group){
-        GameGroupDTO savedGameGroupDto = gameGroupService.createSubject(gameCourse,gamePeriod,gameSubjectAcronym,group);
+        GameGroupDTO savedGameGroupDto = gameGroupService.createGroup(gameCourse,gamePeriod,gameSubjectAcronym,group);
         return new ResponseEntity<>(savedGameGroupDto, HttpStatus.CREATED);
     }
 }

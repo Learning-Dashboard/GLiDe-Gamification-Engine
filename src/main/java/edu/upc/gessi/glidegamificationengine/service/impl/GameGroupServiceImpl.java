@@ -24,7 +24,7 @@ public class GameGroupServiceImpl implements GameGroupService {
     private GameRepository gameRepository;
 
     @Override
-    public GameGroupDTO createSubject(Integer gameCourse, String gamePeriod, String gameSubjectAcronym, Integer group){
+    public GameGroupDTO createGroup(Integer gameCourse, String gamePeriod, String gameSubjectAcronym, Integer group){
         if (gameCourse == null || gamePeriod.isBlank() || gameSubjectAcronym.isBlank() || group == null)
             throw new ConstraintViolationException("Parameter is null or empty.");
         GameGroupKey gameGroupKey = new GameGroupKey();
@@ -42,6 +42,10 @@ public class GameGroupServiceImpl implements GameGroupService {
         GameGroupEntity gameGroupEntity = new GameGroupEntity();
         gameGroupEntity.setId(gameGroupKey);
         gameGroupEntity.setGameEntity(gameEntity);
+
+        if (gameGroupRepository.existsById(gameGroupKey)) {
+            throw new ConstraintViolationException("Repeated game group.");
+        }
 
         GameGroupEntity savedGameGroup = gameGroupRepository.save(gameGroupEntity);
         return GameGroupMapper.mapToGameGroupDTO(savedGameGroup);

@@ -194,6 +194,10 @@ public class GameServiceImpl implements GameService {
         gameKey.setCourse(course);
         gameKey.setPeriod(PeriodType.fromString(period));
 
+        if (gameRepository.existsById(gameKey)) {
+            throw new ConstraintViolationException("This game already exists.");
+        }
+
         gameEntity.setId(gameKey);
         gameEntity.setStartDate(startDate);
         gameEntity.setEndDate(endDate);
