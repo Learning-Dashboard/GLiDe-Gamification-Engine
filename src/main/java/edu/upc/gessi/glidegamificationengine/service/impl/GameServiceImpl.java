@@ -7,6 +7,7 @@ import edu.upc.gessi.glidegamificationengine.exception.ConstraintViolationExcept
 import edu.upc.gessi.glidegamificationengine.exception.ResourceNotFoundException;
 import edu.upc.gessi.glidegamificationengine.mapper.GameMapper;
 import edu.upc.gessi.glidegamificationengine.repository.GameRepository;
+import edu.upc.gessi.glidegamificationengine.repository.SubjectRepository;
 import edu.upc.gessi.glidegamificationengine.service.GameService;
 import edu.upc.gessi.glidegamificationengine.type.AchievementCategoryType;
 import edu.upc.gessi.glidegamificationengine.type.PeriodType;
@@ -34,6 +35,8 @@ public class GameServiceImpl implements GameService {
 
     @Autowired
     private LoggedAchievementServiceImpl loggedAchievementService;
+    @Autowired
+    private SubjectRepository subjectRepository;
 
     /* Private methods */
 
@@ -128,7 +131,7 @@ public class GameServiceImpl implements GameService {
             }
         }
 
-        return gameEntities.stream().map((gameEntity -> GameMapper.mapToGameDto(gameEntity)))
+        return gameEntities.stream().map((GameMapper::mapToGameDto))
                 .collect(Collectors.toList());
     }
 
@@ -179,22 +182,40 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public GameDTO addLevelPolicy(String gameSubjectAcronym, Integer gameCourse, String gamePeriod, Float firstParameter, Float secondParameter, Float thirdParameter){
+    public GameDTO createGame(String subjectAcronym, Integer course, String period, Date startDate, Date endDate, Float firstLevelPolicyParameter, Float secondLevelPolicyParameter, Float thirdLevelPolicyParameter){
+        GameEntity gameEntity = new GameEntity();
+        if (subjectAcronym.isBlank() || course == null || period.isBlank() || startDate == null || endDate == null)
+            throw new ConstraintViolationException("Game attributes cannot be blank");
+        SubjectEntity subjectEntity = subjectRepository.findById(subjectAcronym).
+                orElseThrow(() -> new ResourceNotFoundException("Subject " + subjectAcronym + " not found."));
+
         GameKey gameKey = new GameKey();
-        gameKey.setSubjectAcronym(gameSubjectAcronym);
-        gameKey.setCourse(gameCourse);
-        gameKey.setPeriod(PeriodType.fromString(gamePeriod));
-        GameEntity gameEntity = gameRepository.findById(gameKey)
-                .orElseThrow(() -> new ResourceNotFoundException("Game with acronym: " + gameSubjectAcronym + ", course: " + gameCourse + ", period: " + gamePeriod + " not found."));
-        if (firstParameter == null || secondParameter == null || thirdParameter == null)
-            throw new ConstraintViolationException("Level function parameters cannot be null.");
+        gameKey.setSubjectAcronym(subjectAcronym);
+        gameKey.setCourse(course);
+        gameKey.setPeriod(PeriodType.fromString(period));
+
+        if (gameRepository.existsById(gameKey)) {
+            throw new ConstraintViolationException("This game already exists.");
+        }
+
+        gameEntity.setId(gameKey);
+        gameEntity.setStartDate(startDate);
+        gameEntity.setEndDate(endDate);
+        gameEntity.setSubjectEntity(subjectEntity);
         gameEntity.setLevelPolicyFunctionParameters(new ArrayList<>());
-        gameEntity.getLevelPolicyFunctionParameters().add(firstParameter);
-        gameEntity.getLevelPolicyFunctionParameters().add(secondParameter);
-        gameEntity.getLevelPolicyFunctionParameters().add(thirdParameter);
+        gameEntity.getLevelPolicyFunctionParameters().add(firstLevelPolicyParameter);
+        gameEntity.getLevelPolicyFunctionParameters().add(secondLevelPolicyParameter);
+        gameEntity.getLevelPolicyFunctionParameters().add(thirdLevelPolicyParameter);
 
-        GameEntity savedGame = gameRepository.save(gameEntity);
-
-        return GameMapper.mapToGameDto(savedGame);
+        GameEntity savedGameEntity;
+        try{
+            savedGameEntity = gameRepository.save(gameEntity);
+        }
+        catch(Exception exception){
+            if (exception.getCause() instanceof org.hibernate.exception.ConstraintViolationException)
+                throw new ConstraintViolationException("Game with given parameters already exists.");
+            else throw exception;
+        }
+        return GameMapper.mapToGameDto(savedGameEntity);
     }
 }

@@ -2,6 +2,7 @@ package edu.upc.gessi.glidegamificationengine.service;
 
 import edu.upc.gessi.glidegamificationengine.dto.GameDTO;
 
+import java.sql.Date;
 import java.util.List;
 
 public interface GameService {
@@ -10,5 +11,5 @@ public interface GameService {
 
     void evaluateGame(String gameSubjectAcronym, Integer gameCourse, String gamePeriod);
 
-    GameDTO addLevelPolicy(String gameSubjectAcronym, Integer gameCourse, String gamePeriod, Float firstParameter, Float secondParameter, Float thirdParameter);
+    GameDTO createGame(String subjectAcronym, Integer course, String period, Date startDate, Date endDate, Float firstLevelPolicyParameter, Float secondLevelPolicyParameter, Float thirdLevelPolicyParameter);
 }

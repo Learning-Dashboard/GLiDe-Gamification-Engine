@@ -37,12 +37,17 @@ public class SubjectServiceImpl implements SubjectService {
         subjectEntity.setStudies(studies);
 
         SubjectEntity savedSubjectEntity;
+
+        if (subjectRepository.existsById(subjectEntity.getAcronym())) {
+            throw new ConstraintViolationException("Subject already exists.");
+        }
+
         try {
             savedSubjectEntity = subjectRepository.save(subjectEntity);
         }
         catch (Exception exception) {
             if (exception.getCause() instanceof org.hibernate.exception.ConstraintViolationException)
-                throw new ConstraintViolationException("Subject already exists.");
+                throw new ConstraintViolationException("Subject with the same code or name exists.");
             else throw exception;
         }
         return SubjectMapper.mapToSubjectDto(savedSubjectEntity);
