@@ -6,5 +6,5 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public interface ImportDataService {
-    void importData(String gameSubjectAcronym, Integer gameCourse, String gamePeriod, Integer groupNumber, MultipartFile importedData, MultipartFile defaultUserIcon, MultipartFile defaultTeamIcon) throws IOException;
+    void importData(String gameSubjectAcronym, Integer gameCourse, String gamePeriod, Integer groupNumber, MultipartFile importedData) throws IOException;
 }

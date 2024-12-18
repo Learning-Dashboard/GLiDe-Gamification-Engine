@@ -25,10 +25,8 @@ public class ImportDataController {
                                  @RequestParam(value = "course") Integer gameCourse,
                                  @RequestParam(value = "period") String gamePeriod,
                                  @RequestParam(value = "groupNumber") Integer groupNumber,
-                                 @RequestPart(value = "importedData") MultipartFile importedData,
-                                 @RequestPart(value = "defaultUserIcon") MultipartFile defaultUserIcon,
-                                 @RequestPart(value = "defaultTeamIcon") MultipartFile defaultTeamIcon) throws IOException {
-        importDataService.importData(gameSubjectAcronym, gameCourse, gamePeriod, groupNumber, importedData, defaultUserIcon, defaultTeamIcon);
+                                 @RequestPart(value = "importedData") MultipartFile importedData) throws IOException {
+        importDataService.importData(gameSubjectAcronym, gameCourse, gamePeriod, groupNumber, importedData);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 }

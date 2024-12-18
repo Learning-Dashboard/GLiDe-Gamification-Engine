@@ -14,6 +14,8 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.*;
 
 @Service
@@ -63,8 +66,17 @@ public class ImportDataServiceImpl implements ImportDataService {
 
     @Override
     @Transactional
-    public void importData(String gameSubjectAcronym, Integer gameCourse, String gamePeriod, Integer groupNumber, MultipartFile importedData, MultipartFile defaultUserIcon, MultipartFile defaultTeamIcon){
+    public void importData(String gameSubjectAcronym, Integer gameCourse, String gamePeriod, Integer groupNumber, MultipartFile importedData){
         importToInteraction(importedData);
+
+        Resource resource = new ClassPathResource("static/images/ld.png");
+        byte[] defaultImage;
+        try {
+            defaultImage = Files.readAllBytes(resource.getFile().toPath());
+        } catch (IOException e) {
+            throw new RuntimeException("Issue with default image: " + e.getMessage());
+        }
+
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(importedData.getInputStream(), StandardCharsets.UTF_8));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.builder().setHeader().setIgnoreHeaderCase(true).setTrim(true).build())){
 
@@ -116,7 +128,7 @@ public class ImportDataServiceImpl implements ImportDataService {
                     teamPlayerEntity = new TeamPlayerEntity();
                     teamPlayerEntity.setProjectEntity(projectEntity);
                     teamPlayerEntity.setType(PlayerType.Team);
-                    teamPlayerEntity.setLogo(Base64.getEncoder().encodeToString(defaultUserIcon.getBytes()));
+                    teamPlayerEntity.setLogo(Base64.getEncoder().encodeToString(defaultImage));
                     teamPlayerEntity.setLevel(0);
                     teamPlayerEntity.setPoints(0);
                     teamPlayerEntity.setPlayername(record.get("Project Name"));
@@ -133,7 +145,7 @@ public class ImportDataServiceImpl implements ImportDataService {
                     individualPlayerEntity.setLevel(0);
                     individualPlayerEntity.setPoints(0);
                     individualPlayerEntity.setPlayername(record.get("Username"));
-                    individualPlayerEntity.setAvatar(Base64.getEncoder().encodeToString(defaultTeamIcon.getBytes()));
+                    individualPlayerEntity.setAvatar(Base64.getEncoder().encodeToString(defaultImage));
                     individualPlayerEntity.setType(PlayerType.Individual);
                     individualPlayerEntity.setRole("Student");
                     individualPlayerEntity.setStudentUserEntity(userEntity);
