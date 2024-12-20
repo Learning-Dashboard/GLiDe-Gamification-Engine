@@ -11,10 +11,7 @@ import edu.upc.gessi.glidegamificationengine.mapper.RuleMapper;
 import edu.upc.gessi.glidegamificationengine.repository.DateRuleRepository;
 import edu.upc.gessi.glidegamificationengine.repository.SimpleRuleRepository;
 import edu.upc.gessi.glidegamificationengine.service.RuleService;
-import edu.upc.gessi.glidegamificationengine.type.ConditionType;
-import edu.upc.gessi.glidegamificationengine.type.PeriodType;
-import edu.upc.gessi.glidegamificationengine.type.PlayerType;
-import edu.upc.gessi.glidegamificationengine.type.RuleType;
+import edu.upc.gessi.glidegamificationengine.type.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +40,9 @@ public class RuleServiceImpl implements RuleService {
 
     @Autowired
     private AchievementAssignmentServiceImpl achievementAssignmentService;
+
+    @Autowired
+    private PlayerServiceImpl playerService;
 
     /* Methods callable from Service Layer */
 
@@ -121,6 +121,19 @@ public class RuleServiceImpl implements RuleService {
     }
 
     @Override
+    public void deleteSimpleRule(Long simpleRuleId){
+        SimpleRuleEntity simpleRuleEntity = simpleRuleRepository.findById(simpleRuleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Simple rule with id '" + simpleRuleId + "' not found."));
+
+        boolean achievementCategoryIsPoints = simpleRuleEntity.getAchievementAssignmentEntity().getAchievementEntity().getCategory().equals(AchievementCategoryType.Points);
+
+        simpleRuleRepository.delete(simpleRuleEntity);
+
+        if (achievementCategoryIsPoints)
+            playerService.updatePlayersPointsAndLevels();
+    }
+
+    @Override
     public DateRuleDTO createDateRule(String dateRuleName, Integer dateRuleRepetitions, Date dateRuleStartDate, Date dateRuleEndDate, String gameSubjectAcronym, Integer gameCourse, String gamePeriod, String evaluableActionId, Long achievementId, String achievementAssignmentMessage, Boolean achievementAssignmentOnlyFirstTime, String achievementAssignmentCondition, List<Float> achievementAssignmentConditionParameters, Integer achievementAssignmentUnits, String achievementAssignmentAssessmentLevel) {
         PeriodType gamePeriodType = PeriodType.fromString(gamePeriod);
         ConditionType achievementAssignmentConditionType = ConditionType.fromString(achievementAssignmentCondition);
@@ -193,6 +206,19 @@ public class RuleServiceImpl implements RuleService {
         DateRuleEntity dateRuleEntity = dateRuleRepository.findById(dateRuleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Date rule with id '" + dateRuleId + "' not found."));
         return RuleMapper.mapToDateRuleDto(dateRuleEntity);
+    }
+
+    @Override
+    public void deleteDateRule(Long dateRuleId){
+        DateRuleEntity dateRuleEntity = dateRuleRepository.findById(dateRuleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Simple rule with id '" + dateRuleId + "' not found."));
+
+        boolean achievementCategoryIsPoints = dateRuleEntity.getAchievementAssignmentEntity().getAchievementEntity().getCategory().equals(AchievementCategoryType.Points);
+
+        dateRuleRepository.delete(dateRuleEntity);
+
+        if (achievementCategoryIsPoints)
+            playerService.updatePlayersPointsAndLevels();
     }
 
 }

@@ -29,7 +29,7 @@ public abstract class RuleEntity {
     @Enumerated(EnumType.STRING)
     private RuleType type;
 
-    @OneToOne(mappedBy = "ruleEntity", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "ruleEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private AchievementAssignmentEntity achievementAssignmentEntity;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

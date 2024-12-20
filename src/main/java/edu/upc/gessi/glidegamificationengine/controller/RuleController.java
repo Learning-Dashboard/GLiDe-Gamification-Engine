@@ -76,6 +76,17 @@ public class RuleController {
         return ResponseEntity.ok(simpleRuleDto);
     }
 
+    @Operation(summary = "Delete simple rule", description = "Delete a simple rule and all the associated achievement assignments and logged achievements. The simple rule is identified by its id.", tags = { "rules" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK: Success message.", content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND: Simple rule with the given id not found.", content = @Content)
+    })
+    @DeleteMapping(value="/simples/{id}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> deleteSimpleRule(@PathVariable("id") Long simpleRuleId) {
+        ruleService.deleteSimpleRule(simpleRuleId);
+        return ResponseEntity.ok("Simple rule with id '" + simpleRuleId + "' successfully deleted.");
+    }
+
     @Operation(summary = "Create date rule", description = "Create a new date rule. The date rule name cannot be blank. The date rule repetitions must be greater than or equal to 1. The date rule start date must be equal to or previous to the date rule end date. The achievement assignment condition name must be a valid condition type (ValueGreaterThan, ValueLessThan, ValueEqualTo, ValueGreaterThanOrEqualTo, ValueLessThanOrEqualTo, ValueOutsideOfRange or ValueInsideOfRange). The number of achievement assignment condition parameters must be the expected by the condition type. The achievement assignment assessment level name must be a valid player type (Team or Individual). The game is identified by the subject acronym, course and period, being the period name a valid period type (Quadrimester1 or Quadrimester2). The evaluable action is identified by its id. The achievement is identified by its id. The date rule is returned as a DateRuleDTO object.", tags = { "rules" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "CREATED: DateRuleDTO object.", content = @Content(schema = @Schema(implementation = DateRuleDTO.class))),
@@ -128,4 +139,14 @@ public class RuleController {
         return ResponseEntity.ok(dateRuleDto);
     }
 
+    @Operation(summary = "Delete date rule", description = "Delete a date rule and all the associated achievement assignments and logged achievements. The date rule is identified by its id.", tags = { "rules" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK: Success message.", content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND: Date rule with the given id not found.", content = @Content)
+    })
+    @DeleteMapping(value="/dates/{id}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> deleteDateRule(@PathVariable("id") Long dateRuleId) {
+        ruleService.deleteDateRule(dateRuleId);
+        return ResponseEntity.ok("Simple rule with id '" + dateRuleId + "' successfully deleted.");
+    }
 }
