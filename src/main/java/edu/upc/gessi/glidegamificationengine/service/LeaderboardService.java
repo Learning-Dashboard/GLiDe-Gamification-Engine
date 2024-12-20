@@ -17,6 +17,8 @@ public interface LeaderboardService {
 
     void deleteLeaderboard(Long leaderboardId);
 
+    LeaderboardDTO updateLeaderboard(Long leaderboardId, String leaderboardName, Date leaderboardStartDate, Date leaderboardEndDate, String leaderboardAssessmentLevel, String leaderboardExtent, String leaderboardAnonymization, Boolean leaderboardStudentVisible, Long achievementId, String gameSubjectAcronym, Integer gameCourse, String gamePeriod);
+
     HashMap<String, List<LeaderboardResultDTO>> getLeaderboardResults(Long leaderboardId);
 
 }

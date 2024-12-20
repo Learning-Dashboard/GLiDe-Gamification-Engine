@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,6 +89,29 @@ public class LeaderboardController {
         return ResponseEntity.ok("Leaderboard with id '" + leaderboardId + "' successfully deleted.");
     }
 
+    @Operation(summary = "Update leaderboard", description = "Update a leaderboard. The leaderboard is identified by its id.", tags = { "leaderboards" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK: Success message.", content = @Content(schema = @Schema(implementation = LeaderboardDTO.class))),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST: The given assessment level or anonymization category name not a valid.", content = @Content),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND: Leaderboard with the given id not found.", content = @Content),
+            @ApiResponse(responseCode = "409", description = "CONFLICT: Invalid parameters entered.", content = @Content)
+    })
+    @PutMapping(value="{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LeaderboardDTO> updateLeaderboard(@PathVariable("id") Long leaderboardId,
+                                                            @RequestPart(value = "name") String leaderboardName,
+                                                            @RequestPart(value = "startDate") @Schema(type = "string", format = "date", pattern = "yyyy-MM-dd") String leaderboardStartDate,
+                                                            @RequestPart(value = "endDate") @Schema(type = "string", format = "date", pattern = "yyyy-MM-dd") String leaderboardEndDate,
+                                                            @RequestPart(value = "assessmentLevel") String leaderboardAssessmentLevel,
+                                                            @RequestPart(value = "extent") String leaderboardExtent,
+                                                            @RequestPart(value = "anonymization") String leaderboardAnonymization,
+                                                            @RequestPart(value = "studentVisible") Boolean leaderboardStudentVisible,
+                                                            @RequestPart(value = "achievementId") Long achievementId,
+                                                            @RequestPart(value = "gameSubjectAcronym") String gameSubjectAcronym,
+                                                            @RequestPart(value = "gameCourse") Integer gameCourse,
+                                                            @RequestPart(value = "gamePeriod") String gamePeriod) throws IOException {
+        LeaderboardDTO leaderboardDto = leaderboardService.updateLeaderboard(leaderboardId, leaderboardName, Date.valueOf(leaderboardStartDate), Date.valueOf(leaderboardEndDate), leaderboardAssessmentLevel, leaderboardExtent, leaderboardAnonymization, leaderboardStudentVisible, achievementId, gameSubjectAcronym, gameCourse, gamePeriod);
+        return ResponseEntity.ok(leaderboardDto);
+    }
 
     @Operation(summary = "Get leaderboard results", description = "Get the results of a leaderboard. The leaderboard is identified by its id. The results are returned as a list of LeaderboardResultDTOListEntry objects, which contain the leaderboard extent (subject/group) identifiers and their respective leaderboard results as list of LeaderboardResultDTO objects.", tags = { "leaderboards" })
     @ApiResponses(value = {
