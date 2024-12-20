@@ -77,6 +77,18 @@ public class LeaderboardController {
         return ResponseEntity.ok(leaderboardDto);
     }
 
+    @Operation(summary = "Delete leaderboard", description = "Delete a leaderboard. The leaderboard is identified by its id.", tags = { "leaderboards" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK: Success message.", content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND: Leaderboard with the given id not found.", content = @Content)
+    })
+    @DeleteMapping(value="{id}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> deleteLeaderboard(@PathVariable("id") Long leaderboardId) {
+        leaderboardService.deleteLeaderboard(leaderboardId);
+        return ResponseEntity.ok("Leaderboard with id '" + leaderboardId + "' successfully deleted.");
+    }
+
+
     @Operation(summary = "Get leaderboard results", description = "Get the results of a leaderboard. The leaderboard is identified by its id. The results are returned as a list of LeaderboardResultDTOListEntry objects, which contain the leaderboard extent (subject/group) identifiers and their respective leaderboard results as list of LeaderboardResultDTO objects.", tags = { "leaderboards" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK: List of LeaderboardResultDTOListEntry objects, which contain the leaderboard extent (subject/group) identifiers and their respective leaderboard results as list of LeaderboardResultDTO objects.", content = @Content(array = @ArraySchema(schema = @Schema(implementation = LeaderboardResultDTOListEntry.class)))),

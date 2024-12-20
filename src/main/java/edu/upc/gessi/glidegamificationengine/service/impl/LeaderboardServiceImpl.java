@@ -271,6 +271,13 @@ public class LeaderboardServiceImpl implements LeaderboardService {
     }
 
     @Override
+    public void deleteLeaderboard(Long leaderboardId){
+        LeaderboardEntity leaderboardEntity = getLeaderboardEntityById(leaderboardId);
+
+        leaderboardRepository.deleteById(leaderboardEntity.getId());
+    }
+
+    @Override
     @Transactional
     public HashMap<String, List<LeaderboardResultDTO>> getLeaderboardResults(Long leaderboardId) {
         LeaderboardEntity leaderboardEntity = getLeaderboardEntityById(leaderboardId);

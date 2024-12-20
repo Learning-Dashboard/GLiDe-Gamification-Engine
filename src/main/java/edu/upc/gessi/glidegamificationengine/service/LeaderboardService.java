@@ -15,6 +15,8 @@ public interface LeaderboardService {
 
     LeaderboardDTO getLeaderboard(Long leaderboardId);
 
+    void deleteLeaderboard(Long leaderboardId);
+
     HashMap<String, List<LeaderboardResultDTO>> getLeaderboardResults(Long leaderboardId);
 
 }
