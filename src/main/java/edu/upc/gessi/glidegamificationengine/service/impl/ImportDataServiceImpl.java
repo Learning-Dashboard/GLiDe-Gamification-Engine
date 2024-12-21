@@ -67,8 +67,6 @@ public class ImportDataServiceImpl implements ImportDataService {
     @Override
     @Transactional
     public void importData(String gameSubjectAcronym, Integer gameCourse, String gamePeriod, Integer groupNumber, MultipartFile importedData){
-        importToInteraction(importedData);
-
         Resource resource = new ClassPathResource("static/images/ld.png");
         byte[] defaultImage;
         try {
@@ -152,7 +150,7 @@ public class ImportDataServiceImpl implements ImportDataService {
                     individualPlayerRepository.save(individualPlayerEntity);
                 }
             }
-
+            importToInteraction(importedData);
         } catch (IOException e) {
             throw new RuntimeException("failed to parse CSV file: " + e.getMessage());
         }

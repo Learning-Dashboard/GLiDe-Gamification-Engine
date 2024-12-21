@@ -71,4 +71,20 @@ public class GameController {
         GameDTO savedGameDto = gameService.createGame(subjectAcronym, course, period, Date.valueOf(startDate), Date.valueOf(endDate), firstLevelPolicyParameter, secondLevelPolicyParameter, thirdLevelPolicyParameter);
         return new ResponseEntity<>(savedGameDto, HttpStatus.CREATED);
     }
+
+    @Operation(summary = "Update game", description = "Update game with given parameters.", tags = { "games" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK: Game updated.", content = @Content(schema = @Schema(implementation = GameDTO.class))),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND: Game with the given parameters not found.", content = @Content),
+            @ApiResponse(responseCode = "409", description = "CONFLICT: (1) Invalid date parameters.", content = @Content)
+    })
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GameDTO> updateGame(@RequestParam(value = "gameSubjectAcronym") String gameSubjectAcronym,
+                                              @RequestParam(value = "gameCourse") Integer gameCourse,
+                                              @RequestParam(value = "gamePeriod") String gamePeriod,
+                                              @RequestPart(value = "startDate") @Schema(type = "string", format = "date", pattern = "yyyy-MM-dd") String startDate,
+                                              @RequestPart(value = "endDate") @Schema(type = "string", format = "date", pattern = "yyyy-MM-dd") String endDate){
+        GameDTO updatedGame = gameService.updateGame(gameSubjectAcronym, gameCourse, gamePeriod, Date.valueOf(startDate), Date.valueOf(endDate));
+        return new ResponseEntity<>(updatedGame, HttpStatus.OK);
+    }
 }
