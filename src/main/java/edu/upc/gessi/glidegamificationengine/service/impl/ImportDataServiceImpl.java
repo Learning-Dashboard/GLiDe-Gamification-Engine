@@ -2,6 +2,7 @@ package edu.upc.gessi.glidegamificationengine.service.impl;
 
 import edu.upc.gessi.glidegamificationengine.entity.*;
 import edu.upc.gessi.glidegamificationengine.entity.key.GameGroupKey;
+import edu.upc.gessi.glidegamificationengine.exception.ConstraintViolationException;
 import edu.upc.gessi.glidegamificationengine.exception.ResourceNotFoundException;
 import edu.upc.gessi.glidegamificationengine.repository.*;
 import edu.upc.gessi.glidegamificationengine.service.ImportDataService;
@@ -67,6 +68,8 @@ public class ImportDataServiceImpl implements ImportDataService {
     @Override
     @Transactional
     public void importData(String gameSubjectAcronym, Integer gameCourse, String gamePeriod, Integer groupNumber, MultipartFile importedData){
+        importToInteraction(importedData);
+
         Resource resource = new ClassPathResource("static/images/ld.png");
         byte[] defaultImage;
         try {
@@ -82,6 +85,9 @@ public class ImportDataServiceImpl implements ImportDataService {
 
             Iterable<CSVRecord> records = csvParser.getRecords();
             for (CSVRecord record : records) {
+                if(record.get("Email Address").isBlank() || record.get("Name").isBlank() || record.get("Surname").isBlank() || record.get("Username").isBlank() || record.get("Github Username").isBlank() || record.get("Taiga Username").isBlank() || record.get("Project Name").isBlank() || record.get("Project Github").isBlank() || record.get("Project Taiga").isBlank() || record.get("Project Learningdashboard").isBlank())
+                    throw new ConstraintViolationException("Invalid CSV record");
+
                 ProjectEntity projectEntity;
 
                 Optional<ProjectEntity> optionalProject = projectRepository.findByCustomQuery(record.get("Project Name"), gameSubjectAcronym, gameCourse, periodType);
@@ -150,7 +156,6 @@ public class ImportDataServiceImpl implements ImportDataService {
                     individualPlayerRepository.save(individualPlayerEntity);
                 }
             }
-            importToInteraction(importedData);
         } catch (IOException e) {
             throw new RuntimeException("failed to parse CSV file: " + e.getMessage());
         }
