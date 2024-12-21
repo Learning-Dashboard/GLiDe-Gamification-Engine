@@ -134,6 +134,42 @@ public class RuleServiceImpl implements RuleService {
     }
 
     @Override
+    public SimpleRuleDTO updateSimpleRule(Long simpleRuleId, String simpleRuleName, Integer simpleRuleRepetitions, String gameSubjectAcronym, Integer gameCourse, String gamePeriod, String evaluableActionId, String achievementAssignmentMessage, Boolean achievementAssignmentOnlyFirstTime, String achievementAssignmentCondition, List<Float> achievementAssignmentConditionParameters, Integer achievementAssignmentUnits, String achievementAssignmentAssessmentLevel){
+        PeriodType gamePeriodType = PeriodType.fromString(gamePeriod);
+        ConditionType achievementAssignmentConditionType = ConditionType.fromString(achievementAssignmentCondition);
+        if ((achievementAssignmentConditionParameters == null && achievementAssignmentConditionType.getNumberOfRequiredParameters() != 0) || (achievementAssignmentConditionParameters != null && achievementAssignmentConditionParameters.size() != achievementAssignmentConditionType.getNumberOfRequiredParameters())) {
+            throw new MissingInformationException("The given " + (achievementAssignmentConditionParameters == null ? "0" : achievementAssignmentConditionParameters.size()) + " achievement assignment condition parameters not the expected number by the condition type " + achievementAssignmentConditionType + " (Expected number of parameters: " + achievementAssignmentConditionType.getNumberOfRequiredParameters() + ").");
+        }
+        PlayerType achievementAssignmentAssessmentLevelType = PlayerType.fromString(achievementAssignmentAssessmentLevel);
+
+        SimpleRuleEntity simpleRuleEntity = simpleRuleRepository.findById(simpleRuleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Simple rule with id '" + simpleRuleId + "' not found."));
+
+        GameKey gameKey = new GameKey();
+        gameKey.setSubjectAcronym(gameSubjectAcronym);
+        gameKey.setCourse(gameCourse);
+        gameKey.setPeriod(gamePeriodType);
+        GameEntity gameEntity = gameService.getGameEntityByKey(gameKey);
+        EvaluableActionEntity evaluableActionEntity = evaluableActionService.getEvaluableActionEntityById(evaluableActionId);
+
+        if (simpleRuleName.isBlank())
+            throw new ConstraintViolationException("Simple rule name cannot be blank, please introduce a name.");
+        if (simpleRuleRepetitions < 1)
+            throw new ConstraintViolationException("Simple rule repetitions cannot be less than 1, please introduce a valid number.");
+
+        simpleRuleEntity.setName(simpleRuleName);
+        simpleRuleEntity.setType(RuleType.Simple);
+        simpleRuleEntity.setRepetitions(simpleRuleRepetitions);
+        simpleRuleEntity.setGameEntity(gameEntity);
+        simpleRuleEntity.setEvaluableActionEntity(evaluableActionEntity);
+        SimpleRuleEntity updatedSimpleRuleEntity = simpleRuleRepository.save(simpleRuleEntity);
+
+        achievementAssignmentService.updateAchievementAssignmentEntity(updatedSimpleRuleEntity, achievementAssignmentMessage, achievementAssignmentOnlyFirstTime, achievementAssignmentConditionType, achievementAssignmentConditionParameters, achievementAssignmentUnits, achievementAssignmentAssessmentLevelType);
+
+        return RuleMapper.mapToSimpleRuleDto(updatedSimpleRuleEntity);
+    }
+
+    @Override
     public DateRuleDTO createDateRule(String dateRuleName, Integer dateRuleRepetitions, Date dateRuleStartDate, Date dateRuleEndDate, String gameSubjectAcronym, Integer gameCourse, String gamePeriod, String evaluableActionId, Long achievementId, String achievementAssignmentMessage, Boolean achievementAssignmentOnlyFirstTime, String achievementAssignmentCondition, List<Float> achievementAssignmentConditionParameters, Integer achievementAssignmentUnits, String achievementAssignmentAssessmentLevel) {
         PeriodType gamePeriodType = PeriodType.fromString(gamePeriod);
         ConditionType achievementAssignmentConditionType = ConditionType.fromString(achievementAssignmentCondition);
@@ -219,6 +255,46 @@ public class RuleServiceImpl implements RuleService {
 
         if (achievementCategoryIsPoints)
             playerService.updatePlayersPointsAndLevels();
+    }
+
+    @Override
+    public DateRuleDTO updateDateRule(Long dateRuleId, String dateRuleName, Integer dateRuleRepetitions, Date dateRuleStartDate, Date dateRuleEndDate, String gameSubjectAcronym, Integer gameCourse, String gamePeriod, String evaluableActionId, String achievementAssignmentMessage, Boolean achievementAssignmentOnlyFirstTime, String achievementAssignmentCondition, List<Float> achievementAssignmentConditionParameters, Integer achievementAssignmentUnits, String achievementAssignmentAssessmentLevel){
+        PeriodType gamePeriodType = PeriodType.fromString(gamePeriod);
+        ConditionType achievementAssignmentConditionType = ConditionType.fromString(achievementAssignmentCondition);
+        if ((achievementAssignmentConditionParameters == null && achievementAssignmentConditionType.getNumberOfRequiredParameters() != 0) || (achievementAssignmentConditionParameters != null && achievementAssignmentConditionParameters.size() != achievementAssignmentConditionType.getNumberOfRequiredParameters())) {
+            throw new MissingInformationException("The given " + (achievementAssignmentConditionParameters == null ? "0" : achievementAssignmentConditionParameters.size()) + " achievement assignment condition parameters not the expected number by the condition type " + achievementAssignmentConditionType + " (Expected number of parameters: " + achievementAssignmentConditionType.getNumberOfRequiredParameters() + ").");
+        }
+        PlayerType achievementAssignmentAssessmentLevelType = PlayerType.fromString(achievementAssignmentAssessmentLevel);
+
+        DateRuleEntity dateRuleEntity = dateRuleRepository.findById(dateRuleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Simple rule with id '" + dateRuleId + "' not found."));
+
+        GameKey gameKey = new GameKey();
+        gameKey.setSubjectAcronym(gameSubjectAcronym);
+        gameKey.setCourse(gameCourse);
+        gameKey.setPeriod(gamePeriodType);
+        GameEntity gameEntity = gameService.getGameEntityByKey(gameKey);
+        EvaluableActionEntity evaluableActionEntity = evaluableActionService.getEvaluableActionEntityById(evaluableActionId);
+
+        if (dateRuleName.isBlank())
+            throw new ConstraintViolationException("Date rule name cannot be blank, please introduce a name.");
+        if (dateRuleRepetitions < 1)
+            throw new ConstraintViolationException("Date rule repetitions cannot be less than 1, please introduce a valid number.");
+        if (dateRuleStartDate.after(dateRuleEndDate))
+            throw new ConstraintViolationException("Date rule start date cannot be posterior to the date rule end date, please introduce different dates.");
+
+        dateRuleEntity.setName(dateRuleName);
+        dateRuleEntity.setType(RuleType.Simple);
+        dateRuleEntity.setRepetitions(dateRuleRepetitions);
+        dateRuleEntity.setGameEntity(gameEntity);
+        dateRuleEntity.setEvaluableActionEntity(evaluableActionEntity);
+        dateRuleEntity.setStartDate(dateRuleStartDate);
+        dateRuleEntity.setEndDate(dateRuleEndDate);
+        DateRuleEntity updatedDateRuleEntity = dateRuleRepository.save(dateRuleEntity);
+
+        achievementAssignmentService.updateAchievementAssignmentEntity(updatedDateRuleEntity, achievementAssignmentMessage, achievementAssignmentOnlyFirstTime, achievementAssignmentConditionType, achievementAssignmentConditionParameters, achievementAssignmentUnits, achievementAssignmentAssessmentLevelType);
+
+        return RuleMapper.mapToDateRuleDto(updatedDateRuleEntity);
     }
 
 }
