@@ -271,6 +271,41 @@ public class LeaderboardServiceImpl implements LeaderboardService {
     }
 
     @Override
+    public void deleteLeaderboard(Long leaderboardId){
+        LeaderboardEntity leaderboardEntity = getLeaderboardEntityById(leaderboardId);
+
+        leaderboardRepository.deleteById(leaderboardEntity.getId());
+    }
+
+    @Override
+    public LeaderboardDTO updateLeaderboard(Long leaderboardId, String leaderboardName, Date leaderboardStartDate, Date leaderboardEndDate, String leaderboardAssessmentLevel, String leaderboardExtent, String leaderboardAnonymization, Boolean leaderboardStudentVisible, Long achievementId, String gameSubjectAcronym, Integer gameCourse, String gamePeriod){
+        LeaderboardEntity leaderboardEntity = getLeaderboardEntityById(leaderboardId);
+        if (leaderboardName.isBlank() || leaderboardStartDate.after(leaderboardEndDate))
+            throw new ConstraintViolationException("Invalid parameters entered.");
+        leaderboardEntity.setName(leaderboardName);
+        leaderboardEntity.setStartDate(leaderboardStartDate);
+        leaderboardEntity.setEndDate(leaderboardEndDate);
+        leaderboardEntity.setAssessmentLevel(PlayerType.fromString(leaderboardAssessmentLevel));
+        leaderboardEntity.setExtent(ExtentType.fromString(leaderboardExtent));
+        leaderboardEntity.setAnonymization(AnonymizationType.fromString(leaderboardAnonymization));
+        leaderboardEntity.setStudentVisible(leaderboardStudentVisible);
+
+        AchievementEntity achievementEntity = achievementService.getAchievementEntityById(achievementId);
+        leaderboardEntity.setAchievementEntity(achievementEntity);
+
+        GameKey gameKey = new GameKey();
+        gameKey.setSubjectAcronym(gameSubjectAcronym);
+        gameKey.setCourse(gameCourse);
+        gameKey.setPeriod(PeriodType.fromString(gamePeriod));
+        GameEntity gameEntity = gameService.getGameEntityByKey(gameKey);
+        leaderboardEntity.setGameEntity(gameEntity);
+
+        LeaderboardEntity updatedLeaderboardEntity = leaderboardRepository.save(leaderboardEntity);
+
+        return LeaderboardMapper.mapToLeaderboardDto(updatedLeaderboardEntity);
+    }
+
+    @Override
     @Transactional
     public HashMap<String, List<LeaderboardResultDTO>> getLeaderboardResults(Long leaderboardId) {
         LeaderboardEntity leaderboardEntity = getLeaderboardEntityById(leaderboardId);

@@ -2,6 +2,7 @@ package edu.upc.gessi.glidegamificationengine.service.impl;
 
 import edu.upc.gessi.glidegamificationengine.entity.*;
 import edu.upc.gessi.glidegamificationengine.entity.key.GameGroupKey;
+import edu.upc.gessi.glidegamificationengine.exception.ConstraintViolationException;
 import edu.upc.gessi.glidegamificationengine.exception.ResourceNotFoundException;
 import edu.upc.gessi.glidegamificationengine.repository.*;
 import edu.upc.gessi.glidegamificationengine.service.ImportDataService;
@@ -20,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.BufferedReader;
@@ -50,24 +52,33 @@ public class ImportDataServiceImpl implements ImportDataService {
     @Value("${backend.api.base-url}")
     private String backendBaseUrl;
 
-    private void importToInteraction(MultipartFile importedData){
+    private void importToInteraction(MultipartFile importedData, String gameSubjectAcronym, Integer gameCourse, String gamePeriod){
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
-        builder.part("importedData", importedData.getResource()).contentType(MediaType.MULTIPART_FORM_DATA);
+        builder.part("importedData", importedData.getResource());
+        builder.part("gameSubjectAcronym", gameSubjectAcronym);
+        builder.part("gameCourse", gameCourse);
+        builder.part("gamePeriod", gamePeriod);
 
         WebClient webClient = WebClient.builder().baseUrl(backendBaseUrl).build();
         webClient.post()
                 .uri("/importData")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
-                .bodyValue(builder.build())
+                .body(BodyInserters.fromMultipartData(builder.build()))
                 .retrieve()
                 .toEntity(String.class)
+                .doOnSuccess(response -> {
+                    System.out.println("Import successful: " + response.getBody());
+                })
+                .doOnError(error -> {
+                    System.err.println("Error during import: " + error.getMessage());
+                })
                 .subscribe();
     }
 
     @Override
     @Transactional
     public void importData(String gameSubjectAcronym, Integer gameCourse, String gamePeriod, Integer groupNumber, MultipartFile importedData){
-        importToInteraction(importedData);
+        importToInteraction(importedData, gameSubjectAcronym, gameCourse, gamePeriod);
 
         Resource resource = new ClassPathResource("static/images/ld.png");
         byte[] defaultImage;
@@ -84,6 +95,9 @@ public class ImportDataServiceImpl implements ImportDataService {
 
             Iterable<CSVRecord> records = csvParser.getRecords();
             for (CSVRecord record : records) {
+                if(record.get("Email Address").isBlank() || record.get("Name").isBlank() || record.get("Surname").isBlank() || record.get("Username").isBlank() || record.get("Github Username").isBlank() || record.get("Taiga Username").isBlank() || record.get("Project Name").isBlank() || record.get("Project Github").isBlank() || record.get("Project Taiga").isBlank() || record.get("Project Learningdashboard").isBlank())
+                    throw new ConstraintViolationException("Invalid CSV record");
+
                 ProjectEntity projectEntity;
 
                 Optional<ProjectEntity> optionalProject = projectRepository.findByCustomQuery(record.get("Project Name"), gameSubjectAcronym, gameCourse, periodType);
@@ -152,7 +166,6 @@ public class ImportDataServiceImpl implements ImportDataService {
                     individualPlayerRepository.save(individualPlayerEntity);
                 }
             }
-
         } catch (IOException e) {
             throw new RuntimeException("failed to parse CSV file: " + e.getMessage());
         }

@@ -8,10 +8,12 @@ import edu.upc.gessi.glidegamificationengine.repository.AchievementAssignmentRep
 import edu.upc.gessi.glidegamificationengine.service.AchievementAssignmentService;
 import edu.upc.gessi.glidegamificationengine.type.ConditionType;
 import edu.upc.gessi.glidegamificationengine.type.PlayerType;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AchievementAssignmentServiceImpl implements AchievementAssignmentService {
@@ -43,6 +45,25 @@ public class AchievementAssignmentServiceImpl implements AchievementAssignmentSe
         ruleEntity.setAchievementAssignmentEntity(savedAchievementAssignmentEntity);
     }
 
+    protected void updateAchievementAssignmentEntity(RuleEntity ruleEntity, String achievementAssignmentMessage, Boolean achievementAssignmentOnlyFirstTime, ConditionType achievementAssignmentCondition, List<Float> achievementAssignmentConditionParameters, Integer achievementAssignmentUnits, PlayerType achievementAssignmentAssessmentLevel){
+        Optional<AchievementAssignmentEntity> optionalAchievementAssignmentEntity = achievementAssignmentRepository.findById(ruleEntity.getAchievementAssignmentEntity().getId());
+        if(optionalAchievementAssignmentEntity.isPresent()){
+            AchievementAssignmentEntity achievementAssignmentEntity = optionalAchievementAssignmentEntity.get();
+
+            achievementAssignmentEntity.setMessage(achievementAssignmentMessage);
+            achievementAssignmentEntity.setOnlyFirstTime(achievementAssignmentOnlyFirstTime);
+            achievementAssignmentEntity.setCondition(achievementAssignmentCondition);
+            achievementAssignmentEntity.setConditionParameters(achievementAssignmentConditionParameters);
+            achievementAssignmentEntity.setAchievementUnits(achievementAssignmentUnits);
+            achievementAssignmentEntity.setAssessmentLevel(achievementAssignmentAssessmentLevel);
+
+            achievementAssignmentRepository.save(achievementAssignmentEntity);
+
+        }
+        else {
+            throw new EntityNotFoundException("AchievementAssignmentEntity not found for the provided key.");
+        }
+    }
 
     /* Methods callable from Controller Layer */
 

@@ -186,6 +186,9 @@ public class GameServiceImpl implements GameService {
         GameEntity gameEntity = new GameEntity();
         if (subjectAcronym.isBlank() || course == null || period.isBlank() || startDate == null || endDate == null)
             throw new ConstraintViolationException("Game attributes cannot be blank");
+        if (startDate.after(endDate))
+            throw new ConstraintViolationException("Start date cannot be posterior to the end date, please introduce different dates.");
+
         SubjectEntity subjectEntity = subjectRepository.findById(subjectAcronym).
                 orElseThrow(() -> new ResourceNotFoundException("Subject " + subjectAcronym + " not found."));
 
@@ -217,5 +220,23 @@ public class GameServiceImpl implements GameService {
             else throw exception;
         }
         return GameMapper.mapToGameDto(savedGameEntity);
+    }
+
+    @Override
+    public GameDTO updateGame(String subjectAcronym, Integer course, String period, Date startDate, Date endDate){
+        if (startDate == null || endDate == null)
+            throw new ConstraintViolationException("Game attributes cannot be blank");
+
+        GameKey gameKey = new GameKey();
+        gameKey.setSubjectAcronym(subjectAcronym);
+        gameKey.setCourse(course);
+        gameKey.setPeriod(PeriodType.fromString(period));
+        GameEntity gameEntity = getGameEntityByKey(gameKey);
+
+        gameEntity.setStartDate(startDate);
+        gameEntity.setEndDate(endDate);
+
+        GameEntity updatedGameEntity = gameRepository.save(gameEntity);
+        return GameMapper.mapToGameDto(updatedGameEntity);
     }
 }
