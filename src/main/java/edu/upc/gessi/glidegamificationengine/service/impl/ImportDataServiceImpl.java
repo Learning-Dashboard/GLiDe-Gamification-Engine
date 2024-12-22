@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.BufferedReader;
@@ -51,24 +52,33 @@ public class ImportDataServiceImpl implements ImportDataService {
     @Value("${backend.api.base-url}")
     private String backendBaseUrl;
 
-    private void importToInteraction(MultipartFile importedData){
+    private void importToInteraction(MultipartFile importedData, String gameSubjectAcronym, Integer gameCourse, String gamePeriod){
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
-        builder.part("importedData", importedData.getResource()).contentType(MediaType.MULTIPART_FORM_DATA);
+        builder.part("importedData", importedData.getResource());
+        builder.part("gameSubjectAcronym", gameSubjectAcronym);
+        builder.part("gameCourse", gameCourse);
+        builder.part("gamePeriod", gamePeriod);
 
         WebClient webClient = WebClient.builder().baseUrl(backendBaseUrl).build();
         webClient.post()
                 .uri("/importData")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
-                .bodyValue(builder.build())
+                .body(BodyInserters.fromMultipartData(builder.build()))
                 .retrieve()
                 .toEntity(String.class)
+                .doOnSuccess(response -> {
+                    System.out.println("Import successful: " + response.getBody());
+                })
+                .doOnError(error -> {
+                    System.err.println("Error during import: " + error.getMessage());
+                })
                 .subscribe();
     }
 
     @Override
     @Transactional
     public void importData(String gameSubjectAcronym, Integer gameCourse, String gamePeriod, Integer groupNumber, MultipartFile importedData){
-        importToInteraction(importedData);
+        importToInteraction(importedData, gameSubjectAcronym, gameCourse, gamePeriod);
 
         Resource resource = new ClassPathResource("static/images/ld.png");
         byte[] defaultImage;
