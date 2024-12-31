@@ -25,7 +25,7 @@ public class OpenAPIController {
 
     @Operation(summary = "Create rule title and description", description = "Creates rule title and description for .", tags = { "openAPI" })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "CREATED: AchievementDTO object.", content = @Content(schema = @Schema(implementation = SimpleRuleDTO.class))),
+            @ApiResponse(responseCode = "200", description = "OK: SimpleRuleDTO object.", content = @Content(schema = @Schema(implementation = SimpleRuleDTO.class))),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST: None of the parameters can be blank.", content = @Content)
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
