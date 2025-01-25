@@ -13,7 +13,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/importData")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4202")
 public class ImportDataController {
 
     @Autowired
@@ -27,6 +27,6 @@ public class ImportDataController {
                                  @RequestParam(value = "groupNumber") Integer groupNumber,
                                  @RequestPart(value = "importedData") MultipartFile importedData) throws IOException {
         importDataService.importData(gameSubjectAcronym, gameCourse, gamePeriod, groupNumber, importedData);
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok(HttpStatus.CREATED);
     }
 }

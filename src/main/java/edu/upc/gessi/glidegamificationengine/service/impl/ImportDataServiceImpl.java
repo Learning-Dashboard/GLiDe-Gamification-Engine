@@ -26,9 +26,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.*;
 
 @Service
@@ -55,13 +55,10 @@ public class ImportDataServiceImpl implements ImportDataService {
     private void importToInteraction(MultipartFile importedData, String gameSubjectAcronym, Integer gameCourse, String gamePeriod){
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
         builder.part("importedData", importedData.getResource());
-        builder.part("gameSubjectAcronym", gameSubjectAcronym);
-        builder.part("gameCourse", gameCourse);
-        builder.part("gamePeriod", gamePeriod);
 
         WebClient webClient = WebClient.builder().baseUrl(backendBaseUrl).build();
         webClient.post()
-                .uri("/importData")
+                .uri("/importData?gameSubjectAcronym=" + gameSubjectAcronym + "&gameCourse=" + gameCourse + "&gamePeriod=" + gamePeriod)
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .retrieve()
@@ -72,7 +69,7 @@ public class ImportDataServiceImpl implements ImportDataService {
                 .doOnError(error -> {
                     System.err.println("Error during import: " + error.getMessage());
                 })
-                .subscribe();
+                .block();
     }
 
     @Override
@@ -82,8 +79,8 @@ public class ImportDataServiceImpl implements ImportDataService {
 
         Resource resource = new ClassPathResource("static/images/ld.png");
         byte[] defaultImage;
-        try {
-            defaultImage = Files.readAllBytes(resource.getFile().toPath());
+        try (InputStream inputStream = resource.getInputStream()) {
+            defaultImage = inputStream.readAllBytes();
         } catch (IOException e) {
             throw new RuntimeException("Issue with default image: " + e.getMessage());
         }
